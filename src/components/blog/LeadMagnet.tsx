@@ -105,7 +105,7 @@ export function LeadMagnet({ slug, placement = 'inline' }: LeadMagnetProps) {
                 Want to supercharge your AI search traffic?
               </h4>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Unlock the <strong>Premium GEO Playbook 2026</strong>. Over 150+ pages of detailed blueprints, 50+ JSON-LD code templates, and copy-paste <code>llms.txt</code> files for only <strong>$19</strong> (one-time payment).
+                Unlock the <strong>GEO Action Pack & Template Library 2026</strong>. Get the step-by-step implementation guide, 50+ copy-paste JSON-LD schema snippets, and 12+ <code>llms.txt</code> template packs for only <strong>$19</strong> (one-time payment).
               </p>
             </div>
             <div className="relative z-10 pt-1">
@@ -113,7 +113,7 @@ export function LeadMagnet({ slug, placement = 'inline' }: LeadMagnetProps) {
                 href="/offers/geo-playbook"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black transition shadow-lg shadow-indigo-600/25 cursor-pointer"
               >
-                <span>Get Premium Playbook - $19</span>
+                <span>Get GEO Action Pack - $19</span>
               </Link>
             </div>
           </div>
