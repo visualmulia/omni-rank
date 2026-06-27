@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import crypto from 'crypto';
 
+// Trigger build commit to force Vercel to load the newly added environment variables
+
 export async function POST(request: Request) {
   try {
     // 1. Get raw request body for signature verification
