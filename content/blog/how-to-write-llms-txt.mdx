@@ -1,0 +1,69 @@
+---
+title: "How to Write an llms.txt File for Your Website"
+description: "A complete step-by-step guide to setting up an llms.txt file to guide AI web crawlers and ensure accurate citations."
+date: "2026-07-05"
+author: "Ardyan Permana"
+category: "Technical"
+tags: ["Technical SEO", "LLMs", "AI Crawlers", "HowTo"]
+featured: false
+coverImage: "/images/blog/llms-txt-guide.jpg"
+readingTime: 10
+affiliateLinks: ["notion-ai"]
+schema: ["Article", "HowTo"]
+---
+
+# How to Write an llms.txt File for Your Website
+
+In the age of AI search, a robots.txt file is no longer enough. While robots.txt tells crawlers what they *cannot* crawl, a new file convention—**llms.txt**—helps AI crawlers understand what they *should* prioritize, and how to represent your site accurately in answers.
+
+Here is how to create and optimize an `llms.txt` file for your brand.
+
+<StatBox value="100%" label="AI crawlers support text file scanning" />
+
+## What is llms.txt?
+
+The `llms.txt` file is a markdown file placed at the root of your domain. It provides brief, clear information about your site, tailored specifically for LLMs. When an AI search engine crawls your site, it reads this file to get an immediate summary of your brand, product features, and key links without having to scrape your entire site.
+
+## How to Create It: A Step-by-Step Guide
+
+### Step 1: Create a plain text file named llms.txt
+Place it in the public folder of your project (so it resolves at `yoursite.com/llms.txt`).
+
+### Step 2: Write a summary of your website
+Start with a single level-1 heading (`# Site Name`) followed by a short paragraph explaining what your site is and who it is for.
+
+Here is a template you can copy:
+
+```markdown
+# OmniRank
+
+> AI Visibility Intelligence for Indie Hackers & UMKM.
+> https://omnirank.web.id
+
+OmniRank is a technical platform designed to help websites analyze their Generative Engine Optimization (GEO) scores and discover technical improvements required for AI citation.
+```
+
+### Step 3: Outline key pages and documentation
+Use bullet points and standard markdown links. Keep descriptions concise and objective. LLMs read this list to know which URLs to fetch for more details.
+
+```markdown
+## Key Resources
+
+- [GEO Audit Tool](/): Run a free audit of any URL to check AI visibility.
+- [GEO Fundamentals](/blog/category/geo-fundamentals): Learn how to optimize for ChatGPT and Perplexity.
+- [llms.txt templates](/downloads/llms-templates.zip): Download template files.
+```
+
+### Step 4: Validate and deploy your file
+Ensure the file compiles to clean text and has no broken links. Once verified, push it to production!
+
+<LeadMagnet slug="llms-templates" />
+
+## FAQ
+
+<FAQ items={[
+  { question: "Where does the llms.txt file live?", answer: "At the root of your domain, i.e., https://yourdomain.com/llms.txt" },
+  { question: "Does llms.txt help with standard SEO?", answer: "No, it is specifically designed for AI agents, crawlers, and LLM engines." }
+]} />
+
+<OnmiRankAuditCTA />

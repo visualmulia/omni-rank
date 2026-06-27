@@ -1,0 +1,219 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                      String          @id @default(uuid())
+  email                   String          @unique
+  name                    String?
+  avatarUrl               String?         @map("avatar_url")
+  company                 String?
+  timezone                String          @default("Asia/Jakarta")
+  locale                  String          @default("en")
+  currency                String          @default("USD")
+  subscriptionTier        String          @default("free") @map("subscription_tier")
+  subscriptionStatus      String          @default("inactive") @map("subscription_status")
+  stripeCustomerId        String?         @map("stripe_customer_id")
+  midtransCustomerId      String?         @map("midtrans_customer_id")
+  creditsRemaining        Int             @default(0) @map("credits_remaining")
+  auditsUsedThisMonth     Int             @default(0) @map("audits_used_this_month")
+  maxAuditsPerMonth       Int             @default(1) @map("max_audits_per_month")
+  whiteLabelEnabled       Boolean         @default(false) @map("white_label_enabled")
+  whiteLabelLogoUrl       String?         @map("white_label_logo_url")
+  whiteLabelPrimaryColor  String          @default("#0f172a") @map("white_label_primary_color")
+  whiteLabelSecondaryColor String          @default("#3b82f6") @map("white_label_secondary_color")
+  gscConnected            Boolean         @default(false) @map("gsc_connected")
+  gscAccessToken          String?         @map("gsc_access_token")
+  gscRefreshToken         String?         @map("gsc_refresh_token")
+  gscTokenExpiresAt       DateTime?       @map("gsc_token_expires_at")
+  gscSiteUrl              String?         @map("gsc_site_url")
+  createdAt               DateTime        @default(now()) @map("created_at")
+  updatedAt               DateTime        @updatedAt @map("updated_at")
+
+  audits                 Audit[]
+  competitors            Competitor[]
+  citations              Citation[]
+  trackedQueries         TrackedQuery[]
+  generatedFiles         GeneratedFile[]
+  payments               Payment[]
+  clients                Client[]
+  alerts                 Alert[]
+
+  @@map("users")
+}
+
+model Audit {
+  id             String        @id @default(uuid())
+  userId         String?       @map("user_id")
+  user           User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  url            String
+  domain         String
+  overallScore   Int           @map("overall_score")
+  grade          String        // A+, A, B, C, D, F
+  technicalScore Int           @map("technical_score")
+  contentScore   Int           @map("content_score")
+  brandScore     Int           @map("brand_score")
+  freshnessScore Int           @map("freshness_score")
+  summary        String?
+  suggestedKeywords Json?      @map("suggested_keywords")
+  status         String        @default("pending") // pending, processing, completed, failed
+  reportUrl      String?       @map("report_url")
+  pdfUrl         String?       @map("pdf_url")
+  isWhiteLabel   Boolean       @default(false) @map("is_white_label")
+  clientId       String?       @map("client_id")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  completedAt    DateTime?     @map("completed_at")
+
+  details        AuditDetail[]
+  actionItems    ActionItem[]
+  generatedFiles GeneratedFile[]
+  competitorLast Competitor[]  @relation("LastAudit")
+
+  @@index([userId])
+  @@index([domain])
+  @@index([createdAt])
+  @@map("audits")
+}
+
+model AuditDetail {
+  id              String   @id @default(uuid())
+  auditId         String   @map("audit_id")
+  audit           Audit    @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  category        String   // technical, content, brand, freshness
+  subcategory     String
+  score           Int
+  maxScore        Int      @map("max_score")
+  findings        Json     // JSON Array or Object of findings
+  recommendations Json     // JSON Array or Object of recommendations
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@map("audit_details")
+}
+
+model ActionItem {
+  id                  String    @id @default(uuid())
+  auditId             String    @map("audit_id")
+  audit               Audit     @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  title               String
+  description         String?
+  category            String
+  impact              String    // high, medium, low
+  effort              String    // quick, medium, complex
+  estimatedScoreGain  Int       @map("estimated_score_gain")
+  isCompleted         Boolean   @default(false) @map("is_completed")
+  completedAt         DateTime? @map("completed_at")
+  createdAt           DateTime  @default(now()) @map("created_at")
+
+  @@index([auditId])
+  @@map("action_items")
+}
+
+model Competitor {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  url         String
+  domain      String
+  lastAuditId String?  @map("last_audit_id")
+  lastAudit   Audit?   @relation("LastAudit", fields: [lastAuditId], references: [id], onDelete: SetNull)
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("competitors")
+}
+
+model Citation {
+  id               String   @id @default(uuid())
+  userId           String   @map("user_id")
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  domain           String
+  aiEngine         String   @map("ai_engine") // chatgpt, perplexity, gemini, kimi, claude
+  query            String
+  responseSnippet  String?  @map("response_snippet")
+  isCited          Boolean  @default(false) @map("is_cited")
+  citationUrl      String?  @map("citation_url")
+  citationContext  String?  @map("citation_context")
+  trackedAt        DateTime @default(now()) @map("tracked_at")
+
+  @@index([userId])
+  @@index([domain])
+  @@index([trackedAt])
+  @@map("citations")
+}
+
+model TrackedQuery {
+  id            String    @id @default(uuid())
+  userId        String    @map("user_id")
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  query         String
+  isActive      Boolean   @default(true) @map("is_active")
+  lastCheckedAt DateTime? @map("last_checked_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  @@map("tracked_queries")
+}
+
+model GeneratedFile {
+  id          String   @id @default(uuid())
+  userId      String?  @map("user_id")
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  auditId     String?  @map("audit_id")
+  audit       Audit?   @relation(fields: [auditId], references: [id])
+  fileType    String   @map("file_type") // llms_txt, ai_txt, schema_faq, schema_howto, etc.
+  content     String
+  downloadUrl String?  @map("download_url")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("generated_files")
+}
+
+model Payment {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount          Decimal  @db.Decimal(10, 2)
+  currency        String   @default("USD")
+  paymentMethod   String?  @map("payment_method") // stripe, midtrans, paypal
+  paymentIntentId String?  @map("payment_intent_id")
+  status          String   // pending, completed, failed, refunded
+  productType     String   @map("product_type") // subscription, audit_credit, service
+  description     String?
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("payments")
+}
+
+model Client {
+  id           String   @id @default(uuid())
+  agencyUserId String   @map("agency_user_id")
+  agency       User     @relation(fields: [agencyUserId], references: [id], onDelete: Cascade)
+  name         String
+  email        String?
+  logoUrl      String?  @map("logo_url")
+  primaryColor String   @default("#0f172a") @map("primary_color")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("clients")
+}
+
+model Alert {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   // score_drop, new_citation, competitor_cited, freshness_warning
+  title     String
+  message   String?
+  isRead    Boolean  @default(false) @map("is_read")
+  data      Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("alerts")
+}
