@@ -326,6 +326,211 @@ export function getSchemasForArticle(article: ArticleMetadata, content: string):
     ];
   }
 
+  if (article.slug === 'geo-vs-seo') {
+    const url = `${siteConfig.url}/blog/${article.slug}`;
+    const coverImageUrl = article.coverImage ? `${siteConfig.url}${article.coverImage}` : `${siteConfig.url}/images/blog/geo-vs-seo.jpg`;
+
+    return [
+      // 1. ARTICLE SCHEMA
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "GEO vs SEO: The Key Differences You Need to Know",
+        "description": "Is traditional SEO dead? Compare search engine optimization with generative engine optimization side-by-side. Learn the key differences and how to rank in both.",
+        "image": {
+          "@type": "ImageObject",
+          "url": coverImageUrl,
+          "width": 1200,
+          "height": 630
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Ardyan Permana",
+          "url": "https://www.linkedin.com/in/ardyanpermana/",
+          "jobTitle": "Founder, OnmiRank",
+          "description": "Tech founder, SEO/GEO researcher, and full-stack developer passionate about helping indie hackers and local businesses rank in the AI search era."
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "OnmiRank",
+          "url": siteConfig.url,
+          "logo": {
+            "@type": "ImageObject",
+            "url": `${siteConfig.url}/logo.png`,
+            "width": 512,
+            "height": 512
+          },
+          "sameAs": [
+            "https://twitter.com/onmirank",
+            "https://linkedin.com/company/onmirank",
+            "https://github.com/onmirank"
+          ]
+        },
+        "datePublished": "2026-07-02T00:00:00+07:00",
+        "dateModified": "2026-07-02T00:00:00+07:00",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": url
+        },
+        "articleSection": "Technical",
+        "wordCount": 1650,
+        "inLanguage": "en-US",
+        "isAccessibleForFree": true,
+        "educationalLevel": "intermediate",
+        "audience": {
+          "@type": "Audience",
+          "audienceType": "Digital marketers, solo developers, content creators, SEO professionals"
+        },
+        "about": [
+          {
+            "@type": "Thing",
+            "name": "Generative Engine Optimization",
+            "alternateName": "GEO",
+            "description": "The practice of optimizing content for AI search engines like ChatGPT and Perplexity"
+          },
+          {
+            "@type": "Thing",
+            "name": "Search Engine Optimization",
+            "alternateName": "SEO",
+            "description": "The practice of optimizing websites to rank on Google search results"
+          }
+        ]
+      },
+      // 2. FAQPAGE SCHEMA
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is the main difference between GEO and SEO?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "SEO optimizes for traditional search engines like Google to rank in blue links, whereas GEO (Generative Engine Optimization) optimizes for AI search engines like ChatGPT, Gemini, and Perplexity to get cited as a source in generated answers."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does GEO replace traditional SEO?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No, GEO does not replace SEO. They are complementary. SEO drives clicks through organic listings, while GEO drives visibility and trust through AI citations. A successful strategy integrates both."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is the click-through rate of AI search citations?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "AI search citations drive highly qualified traffic. While many queries end without a click, traffic coming from AI citations has a 14.2% conversion rate, which is nearly 5 times higher than traditional organic search traffic."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do AI engines select websites to cite?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "AI engines select sources based on relevance, factual accuracy, schema markup metadata, presence of statistics, and overall brand authority. Structuring content in Self-Contained Units (SCUs) makes it easier for AI to extract and cite."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I use SEO tools like Surfer SEO for GEO?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Traditional SEO tools help optimize readability and keyword relevance, which AI engines still value. However, you must supplement them with GEO techniques like adding schema markup, creating an llms.txt file, and writing in an answer-first format."
+            }
+          }
+        ]
+      },
+      // 3. BREADCRUMB SCHEMA
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": siteConfig.url
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Blog",
+            "item": `${siteConfig.url}/blog`
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Technical",
+            "item": `${siteConfig.url}/blog/category/technical`
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "name": "GEO vs SEO: The Key Differences",
+            "item": url
+          }
+        ]
+      },
+      // 4. WEBPAGE SCHEMA
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "GEO vs SEO: The Key Differences You Need to Know",
+        "description": "Compare search engine optimization with generative engine optimization side-by-side. Learn the key differences and how to rank in both.",
+        "url": url,
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": siteConfig.url
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Blog",
+              "item": `${siteConfig.url}/blog`
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "GEO vs SEO",
+              "item": url
+            }
+          ]
+        },
+        "mainEntity": {
+          "@type": "Article",
+          "headline": "GEO vs SEO: The Key Differences You Need to Know"
+        }
+      },
+      // 5. SOFTWARE APPLICATION SCHEMA (OnmiRank Tool)
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "OnmiRank",
+        "applicationCategory": "SEOApplication",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.8",
+          "ratingCount": "42"
+        },
+        "operatingSystem": "Web",
+        "description": "AI Visibility Intelligence platform that helps websites analyze their GEO scores and discover technical improvements for AI citation."
+      }
+    ];
+  }
+
   if (article.slug === 'how-to-write-llms-txt') {
     const url = `${siteConfig.url}/blog/${article.slug}`;
     const coverImageUrl = article.coverImage ? `${siteConfig.url}${article.coverImage}` : `${siteConfig.url}/images/blog/llms-txt-guide.jpg`;
