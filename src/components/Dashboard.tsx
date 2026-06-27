@@ -460,7 +460,7 @@ Purpose: indexing
           <div className="glass p-6 rounded-2xl bg-gradient-to-r from-indigo-950/20 via-slate-900/50 to-indigo-950/20 border-indigo-900/30 flex items-start gap-4">
             <Sparkles className="h-6 w-6 text-indigo-400 shrink-0 mt-0.5" />
             <div>
-              <h3 className="text-indigo-300 font-bold text-sm uppercase tracking-wider">Gemini Executive Summary</h3>
+              <h3 className="text-indigo-300 font-bold text-sm uppercase tracking-wider">OmniRank Executive Summary</h3>
               <p className="text-slate-300 text-sm mt-1 leading-relaxed">{summary}</p>
             </div>
           </div>
@@ -510,7 +510,7 @@ Purpose: indexing
                         </div>
                       </div>
                       <div>
-                        <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3">Gemini Fix Instruction</h4>
+                        <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3">OmniRank Fix Instruction</h4>
                         <p className="text-slate-300 text-sm leading-relaxed">{getCategoryDetails('technical').recommendations}</p>
                       </div>
                     </div>
@@ -558,7 +558,7 @@ Purpose: indexing
                         </div>
                       </div>
                       <div>
-                        <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3">Gemini Fix Instruction</h4>
+                        <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3">OmniRank Fix Instruction</h4>
                         <p className="text-slate-300 text-sm leading-relaxed">{getCategoryDetails('content').recommendations}</p>
                       </div>
                     </div>
@@ -606,7 +606,7 @@ Purpose: indexing
                         </div>
                       </div>
                       <div>
-                        <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3">Gemini Fix Instruction</h4>
+                        <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3">OmniRank Fix Instruction</h4>
                         <p className="text-slate-300 text-sm leading-relaxed">{getCategoryDetails('brand').recommendations}</p>
                       </div>
                     </div>
@@ -654,7 +654,7 @@ Purpose: indexing
                         </div>
                       </div>
                       <div>
-                        <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3">Gemini Fix Instruction</h4>
+                        <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3">OmniRank Fix Instruction</h4>
                         <p className="text-slate-300 text-sm leading-relaxed">{getCategoryDetails('freshness').recommendations}</p>
                       </div>
                     </div>
