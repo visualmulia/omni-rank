@@ -90,14 +90,14 @@ const mdxComponents = {
   // Custom wrappers for standard markdown elements to support branding and clean typography
   h1: (props: any) => <h1 className="text-3xl md:text-4xl font-extrabold mt-10 mb-4 text-white leading-tight" {...props} />,
   h2: (props: any) => {
-    const id = props.children?.toString()
+    const id = props.id || props.children?.toString()
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '') || '';
     return <h2 id={id} className="text-2xl md:text-3xl font-bold mt-10 mb-4 text-slate-100 border-b border-slate-900 pb-2.5 leading-snug scroll-mt-24" {...props} />;
   },
   h3: (props: any) => {
-    const id = props.children?.toString()
+    const id = props.id || props.children?.toString()
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '') || '';
