@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Mail, Download, CheckCircle, RefreshCw } from 'lucide-react';
+import Link from 'next/link';
+import { Mail, Download, CheckCircle, RefreshCw, Sparkles } from 'lucide-react';
 import { leadMagnets } from '@/lib/lead-magnets';
 
 interface LeadMagnetProps {
@@ -80,14 +81,42 @@ export function LeadMagnet({ slug, placement = 'inline' }: LeadMagnetProps) {
               We've sent a download link and copy of <strong>{magnet.title}</strong> to <strong>{email}</strong> just in case.
             </p>
           </div>
-          <a
-            href={magnet.fileUrl}
-            download
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-sm font-semibold text-indigo-400 hover:bg-slate-800 transition"
-          >
-            <Download className="h-4 w-4" />
-            Didn't start? Click here
-          </a>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+            <a
+              href={magnet.fileUrl}
+              download
+              className="inline-flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold text-indigo-400 hover:bg-slate-800 transition cursor-pointer"
+            >
+              <Download className="h-4 w-4" />
+              Didn't start? Click here
+            </a>
+          </div>
+
+          <div className="border border-indigo-500/20 bg-gradient-to-r from-indigo-950/40 to-slate-900/60 rounded-2xl p-5 mt-6 text-left space-y-4 shadow-xl shadow-indigo-950/5 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-2 opacity-5">
+              <Sparkles className="h-24 w-24 text-indigo-400" />
+            </div>
+            <div className="space-y-1.5 relative z-10">
+              <span className="inline-flex items-center gap-1 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase text-indigo-400 tracking-wider">
+                <Sparkles className="h-3 w-3 fill-indigo-400" />
+                One-Time Exclusive Offer
+              </span>
+              <h4 className="font-extrabold text-base text-slate-100">
+                Want to supercharge your AI search traffic?
+              </h4>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Unlock the <strong>Premium GEO Playbook 2026</strong>. Over 150+ pages of detailed blueprints, 50+ JSON-LD code templates, and copy-paste <code>llms.txt</code> files for only <strong>$19</strong> (one-time payment).
+              </p>
+            </div>
+            <div className="relative z-10 pt-1">
+              <Link
+                href="/offers/geo-playbook"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black transition shadow-lg shadow-indigo-600/25 cursor-pointer"
+              >
+                <span>Get Premium Playbook - $19</span>
+              </Link>
+            </div>
+          </div>
         </div>
       ) : (
         <div className="space-y-6">

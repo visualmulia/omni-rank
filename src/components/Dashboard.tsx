@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
   CheckCircle2,
   AlertTriangle,
@@ -106,14 +107,12 @@ function LockedOverlay({ title, tier = 'Pro' }: { title: string; tier?: string }
         <p className="text-slate-400 text-xs max-w-sm leading-relaxed">
           Upgrade your plan to the <strong className="text-indigo-400 font-extrabold">{tier}</strong> tier to unlock this feature, analyze deep signals, and track keyword opportunities.
         </p>
-        <button
-          onClick={() => {
-            alert("Payment Integration: Redirecting user to checkout page for " + tier + " Plan ($" + (tier.toLowerCase() === 'pro' ? '29' : '69') + "/mo).");
-          }}
-          className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-600/20 transition cursor-pointer"
+        <Link
+          href="/pricing"
+          className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-600/20 transition cursor-pointer text-center"
         >
           Upgrade to {tier}
-        </button>
+        </Link>
       </div>
     </div>
   );
