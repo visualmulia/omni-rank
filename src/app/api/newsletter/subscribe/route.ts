@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { prisma } from '@/lib/prisma';
 
 const SUBSCRIBERS_FILE = path.join(process.cwd(), 'src/data/subscribers.json');
 
@@ -19,7 +20,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Please provide a valid email address.' }, { status: 400 });
     }
 
-    // 1. Simulated / local database saving
+    // 1. PostgreSQL Database saving via Prisma (Upsert to avoid duplicates)
+    await prisma.subscriber.upsert({
+      where: { email },
+      update: {
+        name: name || null,
+        leadMagnet: leadMagnet || null,
+      },
+      create: {
+        email,
+        name: name || null,
+        leadMagnet: leadMagnet || null,
+      },
+    });
+
+    // 2. Simulated / local database saving
     const dir = path.dirname(SUBSCRIBERS_FILE);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });

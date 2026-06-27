@@ -217,3 +217,13 @@ model Alert {
 
   @@map("alerts")
 }
+
+model Subscriber {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  name        String?
+  leadMagnet  String?  @map("lead_magnet") // downloaded lead magnet slug, or null for general newsletter
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("subscribers")
+}
