@@ -83,7 +83,6 @@ export async function POST(request: Request) {
           api_key: convertKitApiKey,
           email,
           first_name: name || undefined,
-          tags: leadMagnet ? [leadMagnet] : undefined,
         }),
       });
 
