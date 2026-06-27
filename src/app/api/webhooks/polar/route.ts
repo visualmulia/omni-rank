@@ -24,9 +24,15 @@ export async function POST(request: Request) {
     if (!secret) {
       console.warn('[POLAR WEBHOOK] POLAR_WEBHOOK_SECRET is not configured in .env. Skipping signature verification.');
     } else {
-      // Decode secret (supporting standard base64 and whsec_ prefix)
-      const cleanedSecret = secret.startsWith('whsec_') ? secret.substring(6) : secret;
+      // Decode secret (supporting standard base64, polar_whs_ and whsec_ prefixes)
+      let cleanedSecret = secret;
+      if (secret.startsWith('polar_whs_')) {
+        cleanedSecret = secret.substring(10);
+      } else if (secret.startsWith('whsec_')) {
+        cleanedSecret = secret.substring(6);
+      }
       const secretKey = Buffer.from(cleanedSecret, 'base64');
+
 
       // Verify timestamp tolerance (prevent replay attacks - 5 minutes window)
       const now = Math.floor(Date.now() / 1000);
