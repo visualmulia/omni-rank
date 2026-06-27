@@ -99,10 +99,10 @@ export default function PlaybookOfferPage() {
           </div>
 
           <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
-            The Complete <span className="bg-gradient-to-r from-indigo-400 to-indigo-500 bg-clip-text text-transparent">GEO Playbook 2026</span>
+            The <span className="bg-gradient-to-r from-indigo-400 to-indigo-500 bg-clip-text text-transparent">GEO Action Pack & Template Library</span>
           </h1>
           <p className="text-sm md:text-base text-slate-400 leading-relaxed">
-            The definitive blueprint to ranking and getting cited on Perplexity, ChatGPT, Gemini, and Claude. Stop losing organic traffic to AI summaries. Get the step-by-step guide, 50+ schema snippets, and template packs.
+            The ultimate implementation toolkit to rank and get cited on Perplexity, ChatGPT, Gemini, and Claude. Stop losing organic traffic to AI summaries. Get the step-by-step guide, 50+ schema snippets, and template packs.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
@@ -111,8 +111,8 @@ export default function PlaybookOfferPage() {
                 <BookOpen className="h-5 w-5" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-slate-200">150+ Pages</h4>
-                <p className="text-[10px] text-slate-500">Actionable Guide</p>
+                <h4 className="text-xs font-bold text-slate-200">Implementation Guide</h4>
+                <p className="text-[10px] text-slate-500">Step-by-Step PDF</p>
               </div>
             </div>
 
@@ -153,7 +153,7 @@ export default function PlaybookOfferPage() {
                 <div className="space-y-2">
                   <h3 className="font-extrabold text-xl text-slate-100">Purchase Successful!</h3>
                   <p className="text-xs text-slate-400 leading-relaxed max-w-xs mx-auto">
-                    Thank you for your order, <strong>{name}</strong>. We have sent a download link for the **GEO Premium Playbook 2026** directly to <strong>{email}</strong>.
+                    Thank you for your order, <strong>{name}</strong>. We have sent a download link for the **GEO Action Pack & Template Library 2026** directly to <strong>{email}</strong>.
                   </p>
                 </div>
                 <div className="pt-4">
@@ -170,7 +170,7 @@ export default function PlaybookOfferPage() {
               <div className="space-y-6 relative z-10">
                 <div className="flex justify-between items-center border-b border-slate-900 pb-4">
                   <div>
-                    <h3 className="font-extrabold text-base text-slate-100">Playbook Offer</h3>
+                    <h3 className="font-extrabold text-base text-slate-100">Action Pack Offer</h3>
                     <p className="text-[10px] text-slate-500">One-Time Payment Only</p>
                   </div>
                   <div className="text-right">
@@ -299,8 +299,8 @@ export default function PlaybookOfferPage() {
       {/* Book Modules Details */}
       <section className="max-w-4xl mx-auto px-6 pt-28 space-y-12 select-none">
         <div className="text-center space-y-2">
-          <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">What's Inside the Playbook?</h2>
-          <p className="text-xs text-slate-400">Five chapters of rigorous, data-driven optimization blueprints.</p>
+          <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">What's Inside the Action Pack?</h2>
+          <p className="text-xs text-slate-400">The complete implementation bundle for rapid AI search ranking.</p>
         </div>
 
         <div className="space-y-6">
@@ -329,7 +329,7 @@ export default function PlaybookOfferPage() {
           </div>
           <h3 className="text-lg font-bold text-white">100% Risk-Free 30-Day Guarantee</h3>
           <p className="text-xs text-slate-400 leading-relaxed max-w-lg mx-auto">
-            Try the GEO Premium Playbook 2026 for 30 days. Read the strategies, copy the JSON-LD schemas, and implement the llms.txt configs. If you do not see your brand get cited by AI search bots or rank on Perplexity, contact support for a full, prompt refund.
+            Try the GEO Action Pack & Template Library 2026 for 30 days. Read the strategies, copy the JSON-LD schemas, and implement the templates. If you do not feel it gave you the exact step-by-step blueprint and templates to optimize your website for AI search, contact support for a full, prompt refund.
           </p>
         </div>
       </section>
