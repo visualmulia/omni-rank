@@ -62,6 +62,10 @@ export async function POST(request: Request) {
       }
       const actualSignature = signaturePart.substring(3); // Remove 'v1,'
 
+      console.log('[POLAR WEBHOOK] Expected Signature (base64):', expectedSignature);
+      console.log('[POLAR WEBHOOK] Actual Signature (extracted):', actualSignature);
+
+
       // Cryptographically secure constant-time comparison
       const expectedBuffer = Buffer.from(expectedSignature, 'base64');
       const actualBuffer = Buffer.from(actualSignature, 'base64');
