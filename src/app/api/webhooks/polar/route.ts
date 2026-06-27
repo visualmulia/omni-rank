@@ -35,8 +35,6 @@ export async function POST(request: Request) {
       console.log(`[POLAR WEBHOOK] Cleaned Secret length: ${cleanedSecret.length}`);
       const secretKey = Buffer.from(cleanedSecret, 'base64');
 
-
-
       // Verify timestamp tolerance (prevent replay attacks - 5 minutes window)
       const now = Math.floor(Date.now() / 1000);
       const timestamp = parseInt(webhookTimestamp, 10);
@@ -48,9 +46,21 @@ export async function POST(request: Request) {
       // Reconstruct signed payload
       const signedContent = `${webhookId}.${webhookTimestamp}.${rawBody}`;
 
-      // Calculate HMAC-SHA256 signature
-      const expectedSignature = crypto
+      // Calculate HMAC-SHA256 signature using base64 key
+      const expectedSignatureBase64 = crypto
         .createHmac('sha256', secretKey)
+        .update(signedContent)
+        .digest('base64');
+
+      // Calculate HMAC-SHA256 signature using raw cleaned key
+      const expectedSignatureRawCleaned = crypto
+        .createHmac('sha256', cleanedSecret)
+        .update(signedContent)
+        .digest('base64');
+
+      // Calculate HMAC-SHA256 signature using raw full key
+      const expectedSignatureRawFull = crypto
+        .createHmac('sha256', secret)
         .update(signedContent)
         .digest('base64');
 
@@ -62,19 +72,39 @@ export async function POST(request: Request) {
       }
       const actualSignature = signaturePart.substring(3); // Remove 'v1,'
 
-      console.log('[POLAR WEBHOOK] Expected Signature (base64):', expectedSignature);
+      console.log('[POLAR WEBHOOK] Webhook ID:', webhookId);
+      console.log('[POLAR WEBHOOK] Webhook Timestamp:', webhookTimestamp);
+      console.log('[POLAR WEBHOOK] Raw Body Length:', rawBody.length);
+      console.log('[POLAR WEBHOOK] Raw Body Sample:', rawBody.substring(0, 100));
+      console.log('[POLAR WEBHOOK] Expected Signature (Base64 Key):', expectedSignatureBase64);
+      console.log('[POLAR WEBHOOK] Expected Signature (Raw Cleaned Key):', expectedSignatureRawCleaned);
+      console.log('[POLAR WEBHOOK] Expected Signature (Raw Full Key):', expectedSignatureRawFull);
       console.log('[POLAR WEBHOOK] Actual Signature (extracted):', actualSignature);
 
+      // We will check if any of the expected signatures match
+      const bufferActual = Buffer.from(actualSignature, 'base64');
+      const bufferBase64 = Buffer.from(expectedSignatureBase64, 'base64');
+      const bufferRawCleaned = Buffer.from(expectedSignatureRawCleaned, 'base64');
+      const bufferRawFull = Buffer.from(expectedSignatureRawFull, 'base64');
 
-      // Cryptographically secure constant-time comparison
-      const expectedBuffer = Buffer.from(expectedSignature, 'base64');
-      const actualBuffer = Buffer.from(actualSignature, 'base64');
+      let isValid = false;
+      if (bufferActual.length === bufferBase64.length && crypto.timingSafeEqual(bufferActual, bufferBase64)) {
+        isValid = true;
+        console.log('[POLAR WEBHOOK] Signature matches using BASE64 DECODED key.');
+      } else if (bufferActual.length === bufferRawCleaned.length && crypto.timingSafeEqual(bufferActual, bufferRawCleaned)) {
+        isValid = true;
+        console.log('[POLAR WEBHOOK] Signature matches using RAW CLEANED string key.');
+      } else if (bufferActual.length === bufferRawFull.length && crypto.timingSafeEqual(bufferActual, bufferRawFull)) {
+        isValid = true;
+        console.log('[POLAR WEBHOOK] Signature matches using RAW FULL string key.');
+      }
 
-      if (expectedBuffer.length !== actualBuffer.length || !crypto.timingSafeEqual(expectedBuffer, actualBuffer)) {
-        console.error('Webhook signature verification failed.');
+      if (!isValid) {
+        console.error('Webhook signature verification failed for all key types.');
         return NextResponse.json({ error: 'Signature verification failed.' }, { status: 403 });
       }
     }
+
 
     // 4. Parse the payload
     const payload = JSON.parse(rawBody);
