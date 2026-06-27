@@ -20,10 +20,11 @@ export async function POST(request: Request) {
     }
 
     // 3. Verify Signature
-    const secret = process.env.POLAR_WEBHOOK_SECRET;
+    const secret = process.env.POLAR_WEBHOOK_SECRET?.trim();
     if (!secret) {
-      console.warn('[POLAR WEBHOOK] POLAR_WEBHOOK_SECRET is not configured in .env. Skipping signature verification.');
+      console.warn('[POLAR WEBHOOK] POLAR_WEBHOOK_SECRET is not configured in .env or is empty. Skipping signature verification.');
     } else {
+      console.log(`[POLAR WEBHOOK] Secret raw length: ${secret.length}, startsWith polar_whs_: ${secret.startsWith('polar_whs_')}`);
       // Decode secret (supporting standard base64, polar_whs_ and whsec_ prefixes)
       let cleanedSecret = secret;
       if (secret.startsWith('polar_whs_')) {
@@ -31,7 +32,9 @@ export async function POST(request: Request) {
       } else if (secret.startsWith('whsec_')) {
         cleanedSecret = secret.substring(6);
       }
+      console.log(`[POLAR WEBHOOK] Cleaned Secret length: ${cleanedSecret.length}`);
       const secretKey = Buffer.from(cleanedSecret, 'base64');
+
 
 
       // Verify timestamp tolerance (prevent replay attacks - 5 minutes window)
