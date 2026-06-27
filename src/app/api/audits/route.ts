@@ -30,7 +30,16 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'No completed audits found' }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, audit });
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { subscriptionTier: true }
+    });
+
+    return NextResponse.json({ 
+      success: true, 
+      audit, 
+      subscriptionTier: user?.subscriptionTier || 'free' 
+    });
   } catch (error: any) {
     console.error('Fetch latest audit error:', error);
     return NextResponse.json({ error: error.message || 'Failed to fetch audit' }, { status: 500 });
@@ -155,6 +164,7 @@ export async function POST(req: NextRequest) {
       success: true,
       auditId: audit.id,
       audit,
+      subscriptionTier: dbUser?.subscriptionTier || 'free',
     });
   } catch (error: any) {
     console.error('Audit API error:', error);

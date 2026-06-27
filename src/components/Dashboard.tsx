@@ -23,7 +23,8 @@ import {
   RefreshCw,
   Search,
   MessageSquare,
-  BarChart3
+  BarChart3,
+  Lock
 } from 'lucide-react';
 import GEOChart from './GEOChart';
 import GSCDashboard from './GSCDashboard';
@@ -90,10 +91,35 @@ interface CitationStats {
 interface DashboardProps {
   auditData: AuditData;
   userEmail?: string;
+  subscriptionTier?: string;
   onReset: () => void;
 }
 
-export default function Dashboard({ auditData, userEmail, onReset }: DashboardProps) {
+function LockedOverlay({ title, tier = 'Pro' }: { title: string; tier?: string }) {
+  return (
+    <div className="relative border border-slate-900/60 bg-slate-950/20 backdrop-blur-md rounded-2xl p-8 flex flex-col items-center justify-center text-center overflow-hidden min-h-[220px] w-full mt-4">
+      <div className="flex flex-col items-center justify-center p-4 space-y-4">
+        <div className="p-3 bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 rounded-2xl shadow-xl shadow-indigo-600/5">
+          <Lock className="h-5 w-5" />
+        </div>
+        <h3 className="text-base font-bold text-white tracking-tight">{title} is Locked</h3>
+        <p className="text-slate-400 text-xs max-w-sm leading-relaxed">
+          Upgrade your plan to the <strong className="text-indigo-400 font-extrabold">{tier}</strong> tier to unlock this feature, analyze deep signals, and track keyword opportunities.
+        </p>
+        <button
+          onClick={() => {
+            alert("Payment Integration: Redirecting user to checkout page for " + tier + " Plan ($" + (tier.toLowerCase() === 'pro' ? '29' : '69') + "/mo).");
+          }}
+          className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-600/20 transition cursor-pointer"
+        >
+          Upgrade to {tier}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function Dashboard({ auditData, userEmail, subscriptionTier = 'free', onReset }: DashboardProps) {
   // Navigation tab: 'audit' | 'monitoring' | 'gsc'
   const [activeTab, setActiveTab] = useState<'audit' | 'monitoring' | 'gsc'>('audit');
 
@@ -540,7 +566,12 @@ Purpose: indexing
                 </button>
                 
                 {expandedCard === 'content' && (
-                  <div className="p-6 border-t border-slate-900 bg-slate-950/20 space-y-6">
+                  subscriptionTier === 'free' ? (
+                    <div className="p-6 border-t border-slate-900 bg-slate-950/20">
+                      <LockedOverlay title="Content Structure details" />
+                    </div>
+                  ) : (
+                    <div className="p-6 border-t border-slate-900 bg-slate-950/20 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">Audit Findings</h4>
@@ -562,7 +593,8 @@ Purpose: indexing
                         <p className="text-slate-300 text-sm leading-relaxed">{getCategoryDetails('content').recommendations}</p>
                       </div>
                     </div>
-                  </div>
+                    </div>
+                  )
                 )}
               </div>
 
@@ -588,7 +620,12 @@ Purpose: indexing
                 </button>
                 
                 {expandedCard === 'brand' && (
-                  <div className="p-6 border-t border-slate-900 bg-slate-950/20 space-y-6">
+                  subscriptionTier === 'free' ? (
+                    <div className="p-6 border-t border-slate-900 bg-slate-950/20">
+                      <LockedOverlay title="Brand Entity details" />
+                    </div>
+                  ) : (
+                    <div className="p-6 border-t border-slate-900 bg-slate-950/20 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">Audit Findings</h4>
@@ -610,7 +647,8 @@ Purpose: indexing
                         <p className="text-slate-300 text-sm leading-relaxed">{getCategoryDetails('brand').recommendations}</p>
                       </div>
                     </div>
-                  </div>
+                    </div>
+                  )
                 )}
               </div>
 
@@ -636,7 +674,12 @@ Purpose: indexing
                 </button>
                 
                 {expandedCard === 'freshness' && (
-                  <div className="p-6 border-t border-slate-900 bg-slate-950/20 space-y-6">
+                  subscriptionTier === 'free' ? (
+                    <div className="p-6 border-t border-slate-900 bg-slate-950/20">
+                      <LockedOverlay title="Freshness Signals details" />
+                    </div>
+                  ) : (
+                    <div className="p-6 border-t border-slate-900 bg-slate-950/20 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">Audit Findings</h4>
@@ -658,7 +701,8 @@ Purpose: indexing
                         <p className="text-slate-300 text-sm leading-relaxed">{getCategoryDetails('freshness').recommendations}</p>
                       </div>
                     </div>
-                  </div>
+                    </div>
+                  )
                 )}
               </div>
             </div>
@@ -671,7 +715,10 @@ Purpose: indexing
               <p className="text-xs text-muted-foreground">Prioritized fixes sorted by optimization impact.</p>
             </div>
 
-            <div className="space-y-3">
+            {subscriptionTier === 'free' ? (
+              <LockedOverlay title="Prioritized Action Plan" />
+            ) : (
+              <div className="space-y-3">
               {actionItems.map((item, idx) => (
                 <div key={item.id || idx} className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border border-slate-900 bg-slate-950/30 gap-4">
                   <div className="space-y-1">
@@ -702,6 +749,7 @@ Purpose: indexing
                 </div>
               ))}
             </div>
+            )}
           </div>
 
           {/* AI Keyword Opportunities Card */}
@@ -715,7 +763,10 @@ Purpose: indexing
                 <p className="text-xs text-muted-foreground">Tailored search queries where your brand can win high visibility, along with optimization strategies.</p>
               </div>
 
-              <div className="space-y-3">
+              {subscriptionTier === 'free' ? (
+                <LockedOverlay title="AI Keyword Opportunities" />
+              ) : (
+                <div className="space-y-3">
                 {suggestedKeywords.map((item, idx) => (
                   <div key={idx} className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-xl border border-slate-900 bg-slate-950/30 gap-4">
                     <div className="space-y-1">
@@ -745,6 +796,7 @@ Purpose: indexing
                   </div>
                 ))}
               </div>
+              )}
             </div>
           )}
 
@@ -755,7 +807,11 @@ Purpose: indexing
               <p className="text-xs text-muted-foreground">Copy or download files to deploy directly onto your root directory to boost AI indexing immediately.</p>
             </div>
 
-            <div className="flex border-b border-slate-900 gap-2">
+            {subscriptionTier === 'free' ? (
+              <LockedOverlay title="Technical Files Auto-Generator" />
+            ) : (
+              <>
+                <div className="flex border-b border-slate-900 gap-2">
               <button
                 onClick={() => setActiveToolTab('llms')}
                 className={`pb-3 text-sm font-semibold transition cursor-pointer px-1 relative ${activeToolTab === 'llms' ? 'text-indigo-400' : 'text-muted-foreground'}`}
@@ -834,13 +890,18 @@ Purpose: indexing
                 </div>
               )}
             </div>
+            </>
+            )}
           </div>
         </div>
       )}
 
       {/* RENDER TAB 2: AI CITATION MONITORING */}
       {activeTab === 'monitoring' && (
-        <div className="space-y-8 animate-fade-in">
+        subscriptionTier === 'free' ? (
+          <LockedOverlay title="AI Citations Monitoring" />
+        ) : (
+          <div className="space-y-8 animate-fade-in">
           {/* Header Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="glass p-6 rounded-2xl space-y-2 relative overflow-hidden">
@@ -999,15 +1060,19 @@ Purpose: indexing
             </div>
           </div>
         </div>
-      )}
+      )
+    )}
 
-      {/* RENDER TAB 3: GOOGLE SEARCH CONSOLE */}
       {activeTab === 'gsc' && (
-        <GSCDashboard 
-          userEmail={userEmail || ''} 
-          domain={domain} 
-          suggestedKeywords={suggestedKeywords || []} 
-        />
+        subscriptionTier === 'free' ? (
+          <LockedOverlay title="GSC Search Performance Analytics" />
+        ) : (
+          <GSCDashboard 
+            userEmail={userEmail || ''} 
+            domain={domain} 
+            suggestedKeywords={suggestedKeywords || []} 
+          />
+        )
       )}
     </div>
   );

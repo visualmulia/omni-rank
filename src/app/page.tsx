@@ -12,6 +12,7 @@ export default function Home() {
   const [loadingStep, setLoadingStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [auditData, setAuditData] = useState<any | null>(null);
+  const [subscriptionTier, setSubscriptionTier] = useState<string>('free');
 
   const loadingSteps = [
     'Crawling target website content...',
@@ -58,6 +59,7 @@ export default function Home() {
           .then((data) => {
             if (data.audit) {
               setAuditData(data.audit);
+              setSubscriptionTier(data.subscriptionTier || 'free');
             } else {
               throw new Error('No completed audits found for GSC connection.');
             }
@@ -91,6 +93,7 @@ export default function Home() {
                 throw new Error(data.error || 'Failed to complete GEO audit.');
               }
               setAuditData(data.audit);
+              setSubscriptionTier(data.subscriptionTier || 'free');
             } catch (err: any) {
               console.error(err);
               setError(err.message || 'Something went wrong. Please try again.');
@@ -128,6 +131,7 @@ export default function Home() {
       }
 
       setAuditData(data.audit);
+      setSubscriptionTier(data.subscriptionTier || 'free');
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'Something went wrong. Please try again.');
@@ -166,7 +170,7 @@ export default function Home() {
               </div>
             </div>
           </header>
-          <Dashboard auditData={auditData} userEmail={email} onReset={handleReset} />
+          <Dashboard auditData={auditData} userEmail={email} subscriptionTier={subscriptionTier} onReset={handleReset} />
         </div>
         <footer className="border-t border-slate-950/80 bg-slate-950/20 py-6 text-center text-xs text-muted-foreground print:hidden">
           © {new Date().getFullYear()} OmniRank. AI Visibility Intelligence for Indie Hackers & SME.
