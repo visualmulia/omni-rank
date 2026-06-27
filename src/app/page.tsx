@@ -150,9 +150,7 @@ export default function Home() {
           <header className="border-b border-slate-900 bg-slate-950/40 backdrop-blur-md sticky top-0 z-50 print:hidden">
             <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
               <div className="flex items-center gap-2 font-black text-xl tracking-tight text-white">
-                <span className="bg-indigo-600 text-white p-1.5 rounded-lg mr-1 shadow-md shadow-indigo-600/30">
-                  <Zap className="h-4 w-4 fill-white" />
-                </span>
+                <img src="/logo.png" alt="OmniRank Logo" className="h-8 w-8 object-contain mr-0.5 rounded-lg" />
                 OMNI <span className="text-indigo-400">RANK</span>
               </div>
               <div className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
@@ -164,7 +162,7 @@ export default function Home() {
           <Dashboard auditData={auditData} userEmail={email} onReset={handleReset} />
         </div>
         <footer className="border-t border-slate-950/80 bg-slate-950/20 py-6 text-center text-xs text-muted-foreground print:hidden">
-          © {new Date().getFullYear()} OmniRank. AI Visibility Intelligence for Indie Hackers & UMKM.
+          © {new Date().getFullYear()} OmniRank. AI Visibility Intelligence for Indie Hackers & SME.
         </footer>
       </main>
     );
@@ -180,9 +178,7 @@ export default function Home() {
       <header className="border-b border-slate-900/60 bg-slate-950/20 backdrop-blur-md relative z-10">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 font-black text-xl tracking-tight text-white">
-            <span className="bg-indigo-600 text-white p-1.5 rounded-lg mr-1 shadow-md shadow-indigo-600/30">
-              <Zap className="h-4 w-4 fill-white" />
-            </span>
+            <img src="/logo.png" alt="OmniRank Logo" className="h-8 w-8 object-contain mr-0.5 rounded-lg" />
             OMNI <span className="text-indigo-400">RANK</span>
           </div>
           <div className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
@@ -293,7 +289,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t border-slate-950/60 bg-slate-950/10 py-6 text-center text-xs text-muted-foreground relative z-10">
-        © {new Date().getFullYear()} OmniRank. AI Visibility Intelligence for Indie Hackers & UMKM.
+        © {new Date().getFullYear()} OmniRank. AI Visibility Intelligence for Indie Hackers & SME.
       </footer>
     </main>
   );

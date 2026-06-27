@@ -250,7 +250,7 @@
   "name": "OnmiRank",
   "url": "https://www.omnirank.web.id",
   "logo": "https://www.omnirank.web.id/logo.png",
-  "description": "AI Visibility Intelligence for Indie Hackers & UMKM. OnmiRank helps websites analyze their Generative Engine Optimization (GEO) scores and discover technical improvements required for AI citation.",
+  "description": "AI Visibility Intelligence for Indie Hackers & SME. OnmiRank helps websites analyze their Generative Engine Optimization (GEO) scores and discover technical improvements required for AI citation.",
   "sameAs": [
     "https://twitter.com/onmirank",
     "https://linkedin.com/company/onmirank",

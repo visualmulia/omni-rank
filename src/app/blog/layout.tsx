@@ -24,9 +24,7 @@ export default function BlogLayout({
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 font-black text-xl tracking-tight text-white hover:opacity-90 transition-opacity">
-            <span className="bg-indigo-600 text-white p-1.5 rounded-lg mr-1 shadow-md shadow-indigo-600/30">
-              <Zap className="h-4 w-4 fill-white" />
-            </span>
+            <img src="/logo.png" alt="OmniRank Logo" className="h-8 w-8 object-contain mr-0.5 rounded-lg" />
             OMNI <span className="text-indigo-400">RANK</span>
           </Link>
           
@@ -71,7 +69,7 @@ export default function BlogLayout({
             <Link href="/blog" className="hover:text-indigo-400 transition-colors">Blog</Link>
             <Link href="/blog/newsletter" className="hover:text-indigo-400 transition-colors">Newsletter</Link>
           </div>
-          <p>© {new Date().getFullYear()} OmniRank. AI Visibility Intelligence for Indie Hackers & UMKM.</p>
+          <p>© {new Date().getFullYear()} OmniRank. AI Visibility Intelligence for Indie Hackers & SME.</p>
           <p className="text-[10px] text-slate-600 max-w-md mx-auto leading-relaxed">
             GEO is a rapidly evolving practice. OmniRank provides analytical scores and guidance for informational purposes only. We make no guarantees of rankings in individual LLM instances.
           </p>

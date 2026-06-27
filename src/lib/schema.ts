@@ -686,7 +686,7 @@ export function getSchemasForArticle(article: ArticleMetadata, content: string):
         "name": "OnmiRank",
         "url": siteConfig.url,
         "logo": `${siteConfig.url}/logo.png`,
-        "description": "AI Visibility Intelligence for Indie Hackers & UMKM.",
+        "description": "AI Visibility Intelligence for Indie Hackers & SME.",
         "sameAs": [
           "https://twitter.com/onmirank",
           "https://linkedin.com/company/onmirank",

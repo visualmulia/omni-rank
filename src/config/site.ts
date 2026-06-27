@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: "OmniRank",
-  description: "AI Visibility Intelligence for Indie Hackers & UMKM. Audit, optimize, and track your brand's presence in ChatGPT, Perplexity, Gemini, and Claude.",
+  description: "AI Visibility Intelligence for Indie Hackers & SME. Audit, optimize, and track your brand's presence in ChatGPT, Perplexity, Gemini, and Claude.",
   url: "https://omnirank.web.id",
   ogImage: "https://omnirank.web.id/og/default.jpg",
   author: {
