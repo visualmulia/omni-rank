@@ -1,1 +1,47 @@
-Schema snippets ZIP contents
+================================================================================
+                    OMNIRANK: SCHEMA.ORG JSON-LD LIBRARY
+         Copy-Paste Snippets to Boost AI Citation Rate and Rich Snippets
+================================================================================
+
+--------------------------------------------------------------------------------
+1. ARTICLE SCHEMA
+--------------------------------------------------------------------------------
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Article Title",
+  "description": "Short article description",
+  "image": "https://example.com/image.jpg",
+  "datePublished": "2026-07-01T08:00:00+07:00",
+  "dateModified": "2026-07-02T10:00:00+07:00",
+  "author": {
+    "@type": "Person",
+    "name": "Author Name"
+  }
+}
+</script>
+
+--------------------------------------------------------------------------------
+2. FAQPAGE SCHEMA
+--------------------------------------------------------------------------------
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Question 1?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Answer 1."
+      }
+    }
+  ]
+}
+</script>
+
+For the full catalog of 50+ schemas, check:
+                     www.omnirank.web.id
+================================================================================

@@ -1,1 +1,56 @@
-GEO Checklist PDF contents
+================================================================================
+                    OMNIRANK: THE COMPLETE GEO CHECKLIST 2026
+           25 Actionable Steps to Optimize Your Brand for AI Search
+================================================================================
+
+Generative Engine Optimization (GEO) is the practice of optimizing your website 
+and brand presence so Large Language Models (LLMs) like ChatGPT, Claude, and 
+Gemini cite and recommend you in search answers.
+
+Follow these 25 steps to maximize your brand's AI search visibility.
+
+--------------------------------------------------------------------------------
+PART 1: TECHNICAL CRAWLABILITY (6 Steps)
+--------------------------------------------------------------------------------
+[ ] 1. Create a root-level /llms.txt file to guide AI crawler models.
+[ ] 2. Establish a /llms-full.txt file for detailed project files and context.
+[ ] 3. Explicitly allow AI bots (GPTBot, ClaudeBot, PerplexityBot) in robots.txt.
+[ ] 4. Embed clean, schema-compliant JSON-LD markup on every article.
+[ ] 5. Implement structured FAQPage schemas for informational queries.
+[ ] 6. Ensure your XML Sitemap contains dateModified attributes for freshness.
+
+--------------------------------------------------------------------------------
+PART 2: CONTENT STRUCTURE & EVIDENCE DENSITY (7 Steps)
+--------------------------------------------------------------------------------
+[ ] 7. Use the "Answer-First" model: Place a 30-40 word summary at the top.
+[ ] 8. Focus on Evidence Density: Incorporate statistics, studies, and data points.
+[ ] 9. Format key takeaways into clear bullet points for easy AI extraction.
+[ ] 10. Write in Self-Contained Units (SCUs): Short, fact-heavy paragraphs.
+[ ] 11. Use explicit HTML IDs (e.g. id="step-1") on headings for anchor citations.
+[ ] 12. Structure comparison data using transparent HTML tables.
+[ ] 13. Answer questions directly: Create a dedicated FAQ section with H3 tags.
+
+--------------------------------------------------------------------------------
+PART 3: BRAND ENTITY & OFF-PAGE AUTHORITY (6 Steps)
+--------------------------------------------------------------------------------
+[ ] 14. Standardize your Name, Address, and Phone (NAP) across the entire web.
+[ ] 15. Create or claim profiles on third-party directories (G2, Trustpilot).
+[ ] 16. Secure references in authoritative publications to feed AI training sets.
+[ ] 17. Maintain active GitHub, LinkedIn, and social profiles (social proof).
+[ ] 18. Build Wikipedia or Wikidata entity references if eligible.
+[ ] 19. Ensure your brand is mentioned alongside your target keyword categories.
+
+--------------------------------------------------------------------------------
+PART 4: MONITORING & ONGOING AUDITING (6 Steps)
+--------------------------------------------------------------------------------
+[ ] 20. Run weekly GEO Visibility Audits using OmniRank to check your overall grade.
+[ ] 21. Track your AI Share of Voice (SOV) across Perplexity, ChatGPT, and Gemini.
+[ ] 22. Log and monitor search console keywords to trace AI crawler overlaps.
+[ ] 23. Test query prompts manually inside LLM chatbots to check citations.
+[ ] 24. Optimize low-performing pages with high-impact prioritized action plans.
+[ ] 25. Update outdated content periodically to trigger freshness signals.
+
+================================================================================
+For automated audits, real-time citation tracking, and technical file generators:
+                     Run a Free Audit at: www.omnirank.web.id
+================================================================================
