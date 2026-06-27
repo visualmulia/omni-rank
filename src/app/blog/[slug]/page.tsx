@@ -42,9 +42,14 @@ export async function generateMetadata({ params }: PageProps) {
     };
   }
 
+  // Extract author URL or fallback to siteConfig LinkedIn url
+  const authorUrl = siteConfig.author.socials.linkedin || 'https://www.linkedin.com/in/ardyanpermana/';
+
   return {
     title: `${article.metadata.title} | ${siteConfig.name} Blog`,
     description: article.metadata.description,
+    keywords: article.metadata.tags || [],
+    authors: [{ name: article.metadata.author, url: authorUrl }],
     openGraph: {
       title: article.metadata.title,
       description: article.metadata.description,
@@ -54,8 +59,13 @@ export async function generateMetadata({ params }: PageProps) {
         {
           url: article.metadata.coverImage ? `${siteConfig.url}${article.metadata.coverImage}` : siteConfig.ogImage,
           alt: article.metadata.title,
+          width: 1200,
+          height: 630
         },
       ],
+      publishedTime: article.metadata.date ? `${article.metadata.date}T00:00:00+07:00` : undefined,
+      modifiedTime: article.metadata.date ? `${article.metadata.date}T00:00:00+07:00` : undefined,
+      authors: [authorUrl]
     },
     twitter: {
       card: 'summary_large_image',

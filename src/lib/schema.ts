@@ -118,6 +118,214 @@ export function generateHowToSchema(article: ArticleMetadata, content: string) {
 
 // Helper to bundle all relevant schemas for a given post
 export function getSchemasForArticle(article: ArticleMetadata, content: string): any[] {
+  if (article.slug === 'what-is-geo') {
+    const url = `${siteConfig.url}/blog/${article.slug}`;
+    const coverImageUrl = article.coverImage ? `${siteConfig.url}${article.coverImage}` : `${siteConfig.url}/images/blog/what-is-geo.jpg`;
+
+    return [
+      // 1. ARTICLE SCHEMA
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "What is Generative Engine Optimization (GEO)?",
+        "description": "Learn what Generative Engine Optimization (GEO) is, why it matters in 2026, and how to optimize your brand for AI search engines like ChatGPT, Perplexity, and Gemini.",
+        "image": {
+          "@type": "ImageObject",
+          "url": coverImageUrl,
+          "width": 1200,
+          "height": 630
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Ardyan Permana",
+          "url": "https://www.linkedin.com/in/ardyanpermana/",
+          "jobTitle": "Founder, OnmiRank",
+          "description": "Tech founder, SEO/GEO researcher, and full-stack developer passionate about helping indie hackers and local businesses rank in the AI search era."
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "OnmiRank",
+          "url": siteConfig.url,
+          "logo": {
+            "@type": "ImageObject",
+            "url": `${siteConfig.url}/logo.png`,
+            "width": 512,
+            "height": 512
+          },
+          "sameAs": [
+            "https://twitter.com/onmirank",
+            "https://linkedin.com/company/onmirank",
+            "https://github.com/onmirank"
+          ]
+        },
+        "datePublished": "2026-06-30T00:00:00+07:00",
+        "dateModified": "2026-06-30T00:00:00+07:00",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": url
+        },
+        "articleSection": "GEO Fundamentals",
+        "wordCount": 1800,
+        "inLanguage": "en-US",
+        "isAccessibleForFree": true,
+        "educationalLevel": "beginner",
+        "audience": {
+          "@type": "Audience",
+          "audienceType": "Digital marketers, solo developers, content creators, SEO professionals"
+        },
+        "about": [
+          {
+            "@type": "Thing",
+            "name": "Generative Engine Optimization",
+            "alternateName": "GEO",
+            "description": "The practice of optimizing content for AI search engines like ChatGPT and Perplexity"
+          },
+          {
+            "@type": "Thing",
+            "name": "AI Search",
+            "description": "Search engines that use large language models to generate answers"
+          }
+        ]
+      },
+      // 2. FAQPAGE SCHEMA
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is GEO and how is it different from SEO?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "GEO (Generative Engine Optimization) is the practice of optimizing your content to be discovered, cited, and trusted by AI search engines like ChatGPT, Perplexity, and Gemini. While SEO focuses on ranking in traditional search engines like Google, GEO focuses on being the source that AI engines cite when generating answers. Key differences: SEO targets blue links rankings, GEO targets AI citations; SEO uses keywords, GEO uses answer-first content; SEO needs backlinks, GEO needs schema and brand entity."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Why does GEO matter in 2026?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "GEO matters because 60% of AI searches end without a click, only 16% of brands appear in AI-generated answers, and AI traffic converts at 14.2% — nearly 5x higher than traditional organic traffic. As AI search engines like ChatGPT, Perplexity, and Gemini become primary information sources, brands that are not optimized for AI search will become invisible to their target audience."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What are the 3 pillars of GEO?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The 3 pillars of GEO are: (1) Technical Signals — ensuring AI crawlers can access your site, implementing schema markup, and creating AI-specific files like llms.txt; (2) Content Structure — using answer-first format, self-contained units (SCUs), and evidence-based writing with statistics every 150-200 words; (3) Brand Entity — maintaining NAP consistency, building third-party presence, and establishing authority signals across platforms."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How long does it take for GEO to work?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Most websites see initial AI citation improvements within 4-8 weeks of implementing GEO best practices. Full results typically appear within 3 months. However, this depends on your starting point — sites with existing SEO foundations see faster results, while new sites may need 6 months to build sufficient authority signals."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I do GEO without technical skills?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, basic GEO can be implemented without coding. Content optimization (answer-first structure, FAQ sections, evidence-based writing) requires no technical skills. Technical GEO (schema markup, llms.txt, AI.txt) requires minimal technical knowledge that most marketers can learn. Tools like OnmiRank can automate technical GEO implementation, allowing non-technical users to optimize for AI search."
+            }
+          }
+        ]
+      },
+      // 3. BREADCRUMB SCHEMA
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": siteConfig.url
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Blog",
+            "item": `${siteConfig.url}/blog`
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "GEO Fundamentals",
+            "item": `${siteConfig.url}/blog/category/geo-fundamentals`
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "name": "What is Generative Engine Optimization (GEO)?",
+            "item": url
+          }
+        ]
+      },
+      // 4. WEBPAGE SCHEMA
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "What is Generative Engine Optimization (GEO)?",
+        "description": "Learn what GEO is, why it matters in 2026, and how to optimize for AI search engines.",
+        "url": url,
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": siteConfig.url
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Blog",
+              "item": `${siteConfig.url}/blog`
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "What is GEO?",
+              "item": url
+            }
+          ]
+        },
+        "mainEntity": {
+          "@type": "Article",
+          "headline": "What is Generative Engine Optimization (GEO)?"
+        },
+        "speakable": {
+          "@type": "SpeakableSpecification",
+          "cssSelector": [".article-title", ".article-body"]
+        }
+      },
+      // 5. SOFTWARE APPLICATION SCHEMA (OnmiRank Tool)
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "OnmiRank",
+        "applicationCategory": "SEOApplication",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.8",
+          "ratingCount": "42"
+        },
+        "operatingSystem": "Web",
+        "description": "AI Visibility Intelligence platform that helps websites analyze their GEO scores and discover technical improvements for AI citation."
+      }
+    ];
+  }
+
   if (article.slug === 'how-to-write-llms-txt') {
     const url = `${siteConfig.url}/blog/${article.slug}`;
     const coverImageUrl = article.coverImage ? `${siteConfig.url}${article.coverImage}` : `${siteConfig.url}/images/blog/llms-txt-guide.jpg`;
