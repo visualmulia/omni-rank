@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   ChevronLeft, 
@@ -19,30 +19,47 @@ import { siteConfig } from '@/config/site';
 export default function PlaybookOfferPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [cvc, setCvc] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [checkoutStep, setCheckoutStep] = useState<'details' | 'payment'>('details');
 
-  const handleDetailsSubmit = (e: React.FormEvent) => {
+  // Check for successful payment redirect
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('payment_success') === 'true') {
+        setSuccess(true);
+        // Clean query parameters from URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+  }, []);
+
+  const handleDetailsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email) return;
-    setCheckoutStep('payment');
-  };
-
-  const handleCheckoutSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!cardNumber || !expiry || !cvc) return;
 
     setLoading(true);
 
-    // Simulate payment processing
-    setTimeout(() => {
-      setLoading(false);
-      setSuccess(true);
-    }, 2000);
+    try {
+      // Save as pending subscriber/lead before redirecting (cart abandonment capture)
+      await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          name,
+          leadMagnet: 'geo-playbook',
+        }),
+      });
+    } catch (err) {
+      console.warn('Failed to capture lead details before redirect:', err);
+    }
+
+    // Redirect to Polar sandbox checkout link with customer_email prefilled
+    const polarCheckoutUrl = `https://sandbox-api.polar.sh/v1/checkout-links/polar_cl_2F1WlWtB9naV8hmgsK2qr8bM7BevDGgdPeaDN1zFqNx/redirect?customer_email=${encodeURIComponent(email)}`;
+    window.location.href = polarCheckoutUrl;
   };
 
   const modules = [
@@ -179,116 +196,55 @@ export default function PlaybookOfferPage() {
                   </div>
                 </div>
 
-                {checkoutStep === 'details' ? (
-                  <form onSubmit={handleDetailsSubmit} className="space-y-4">
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Your Full Name</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. John Doe"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="w-full h-10 px-4 rounded-xl bg-slate-950 border border-slate-800 text-xs md:text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition-colors"
-                      />
-                    </div>
+                <form onSubmit={handleDetailsSubmit} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Your Full Name</label>
+                    <input
+                      type="text"
+                      required
+                      disabled={loading}
+                      placeholder="e.g. John Doe"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full h-10 px-4 rounded-xl bg-slate-950 border border-slate-800 text-xs md:text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition-colors disabled:opacity-50"
+                    />
+                  </div>
 
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Email Address</label>
-                      <input
-                        type="email"
-                        required
-                        placeholder="e.g. john@example.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full h-10 px-4 rounded-xl bg-slate-950 border border-slate-800 text-xs md:text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition-colors"
-                      />
-                    </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Email Address</label>
+                    <input
+                      type="email"
+                      required
+                      disabled={loading}
+                      placeholder="e.g. john@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full h-10 px-4 rounded-xl bg-slate-950 border border-slate-800 text-xs md:text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition-colors disabled:opacity-50"
+                    />
+                  </div>
 
-                    <button
-                      type="submit"
-                      className="w-full h-11 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-1.5 transition cursor-pointer"
-                    >
-                      <span>Continue to Payment</span>
-                    </button>
-                  </form>
-                ) : (
-                  <form onSubmit={handleCheckoutSubmit} className="space-y-4">
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                        <CreditCard className="h-3 w-3" />
-                        Credit Card Number
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        maxLength={19}
-                        placeholder="4111 2222 3333 4444"
-                        value={cardNumber}
-                        onChange={(e) => setCardNumber(e.target.value)}
-                        className="w-full h-10 px-4 rounded-xl bg-slate-950 border border-slate-800 text-xs md:text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition-colors"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Expiry Date</label>
-                        <input
-                          type="text"
-                          required
-                          maxLength={5}
-                          placeholder="MM/YY"
-                          value={expiry}
-                          onChange={(e) => setExpiry(e.target.value)}
-                          className="w-full h-10 px-4 rounded-xl bg-slate-950 border border-slate-800 text-xs md:text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition-colors"
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">CVC / CVV</label>
-                        <input
-                          type="password"
-                          required
-                          maxLength={3}
-                          placeholder="123"
-                          value={cvc}
-                          onChange={(e) => setCvc(e.target.value)}
-                          className="w-full h-10 px-4 rounded-xl bg-slate-950 border border-slate-800 text-xs md:text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition-colors"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setCheckoutStep('details')}
-                        className="w-1/3 h-11 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 text-xs font-bold transition cursor-pointer"
-                      >
-                        Back
-                      </button>
-                      <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-2/3 h-11 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-1.5 transition disabled:opacity-50 cursor-pointer"
-                      >
-                        {loading ? (
-                          <>
-                            <RefreshCw className="h-4.5 w-4.5 animate-spin" />
-                            <span>Processing...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Lock className="h-3.5 w-3.5" />
-                            <span>Pay $19 Securely</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </form>
-                )}
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full h-11 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-1.5 transition disabled:opacity-50 cursor-pointer"
+                  >
+                    {loading ? (
+                      <>
+                        <RefreshCw className="h-4.5 w-4.5 animate-spin" />
+                        <span>Redirecting to Checkout...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="h-3.5 w-3.5" />
+                        <span>Get Action Pack for $19</span>
+                      </>
+                    )}
+                  </button>
+                </form>
 
                 <p className="text-[9px] text-center text-slate-500 flex items-center justify-center gap-1 select-none">
                   <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
-                  Secure SSL Checkout. Powered by OmniRank Billing sandbox.
+                  Secure SSL Checkout. Powered by Polar.sh
                 </p>
               </div>
             )}

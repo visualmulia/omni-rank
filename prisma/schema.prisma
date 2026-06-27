@@ -227,3 +227,22 @@ model Subscriber {
 
   @@map("subscribers")
 }
+
+model Purchase {
+  id             String   @id @default(uuid())
+  email          String
+  name           String?
+  productSlug    String   @map("product_slug") @default("geo-playbook")
+  amount         Decimal  @db.Decimal(10, 2)
+  currency       String   @default("USD")
+  paymentStatus  String   @default("pending") @map("payment_status") // pending, completed, failed
+  paymentGateway String   @default("polar") @map("payment_gateway")
+  gatewayOrderId String?  @unique @map("gateway_order_id")
+  downloadToken  String   @unique @map("download_token")
+  accessCount    Int      @default(0) @map("access_count")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("purchases")
+}
+
