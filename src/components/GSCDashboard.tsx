@@ -197,8 +197,8 @@ export default function GSCDashboard({ userEmail, domain, suggestedKeywords = []
               <CheckCircle2 className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-white font-bold text-sm">Google Search Console Terkoneksi</h3>
-              <p className="text-slate-400 text-xs mt-0.5">Berhasil menyinkronkan data organic performance untuk {domain}.</p>
+              <h3 className="text-white font-bold text-sm">Google Search Console Connected</h3>
+              <p className="text-slate-400 text-xs mt-0.5">Successfully synchronized organic performance metrics for {domain}.</p>
             </div>
           </div>
           <button
@@ -222,7 +222,7 @@ export default function GSCDashboard({ userEmail, domain, suggestedKeywords = []
               30d <TrendingUp className="h-3 w-3 ml-0.5" />
             </span>
           </div>
-          <p className="text-slate-400 text-xs mt-2">Kunjungan organik dari Google Search</p>
+          <p className="text-slate-400 text-xs mt-2">Organic visits from Google Search</p>
         </div>
 
         {/* Card 2: Impressions */}
@@ -232,7 +232,7 @@ export default function GSCDashboard({ userEmail, domain, suggestedKeywords = []
             <span className="text-2xl md:text-3xl font-black text-white tracking-tight">{summary.totalImpressions.toLocaleString()}</span>
             <span className="text-indigo-400 text-xs font-semibold">30d</span>
           </div>
-          <p className="text-slate-400 text-xs mt-2">Frekuensi website tampil di hasil pencarian</p>
+          <p className="text-slate-400 text-xs mt-2">Frequency website appeared in search results</p>
         </div>
 
         {/* Card 3: Avg CTR */}
@@ -242,7 +242,7 @@ export default function GSCDashboard({ userEmail, domain, suggestedKeywords = []
             <span className="text-2xl md:text-3xl font-black text-white tracking-tight">{summary.avgCtr}%</span>
             <span className="text-indigo-400 text-xs font-semibold">30d</span>
           </div>
-          <p className="text-slate-400 text-xs mt-2">Rasio klik dibanding kemunculan (Impressions)</p>
+          <p className="text-slate-400 text-xs mt-2">Click-through ratio relative to impressions</p>
         </div>
 
         {/* Card 4: Avg Position */}
@@ -252,7 +252,7 @@ export default function GSCDashboard({ userEmail, domain, suggestedKeywords = []
             <span className="text-2xl md:text-3xl font-black text-white tracking-tight">{summary.avgPosition}</span>
             <span className="text-indigo-400 text-xs font-semibold">30d</span>
           </div>
-          <p className="text-slate-400 text-xs mt-2">Rata-rata peringkat link Anda di Google</p>
+          <p className="text-slate-400 text-xs mt-2">Average ranking position of your links on Google</p>
         </div>
       </div>
 
@@ -260,8 +260,8 @@ export default function GSCDashboard({ userEmail, domain, suggestedKeywords = []
       <div className="bg-slate-950/20 border border-slate-900 rounded-2xl p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-white font-bold text-base">Trafik Organic & Impression Trend</h3>
-            <p className="text-slate-500 text-xs mt-0.5">Grafik performa klik dan impresi Google Search dalam 30 hari terakhir.</p>
+            <h3 className="text-white font-bold text-base">Organic Traffic & Impression Trend</h3>
+            <p className="text-slate-500 text-xs mt-0.5">Organic clicks and impressions performance trend over the last 30 days.</p>
           </div>
           <div className="flex items-center gap-4 text-xs font-semibold">
             <span className="flex items-center gap-1.5 text-indigo-400">
@@ -337,12 +337,12 @@ export default function GSCDashboard({ userEmail, domain, suggestedKeywords = []
           <div>
             <h3 className="text-white font-bold text-base">Top Organic Keywords (Google Search)</h3>
             <p className="text-slate-500 text-xs mt-0.5">
-              Kata kunci penelusuran yang mendatangkan impresi dan klik organik ke website Anda.
+              Search queries driving organic impressions and clicks to your website.
             </p>
           </div>
           <div className="text-xs bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-slate-400 flex items-center gap-1.5">
             <Sparkles className="h-3.5 w-3.5 text-indigo-400 fill-indigo-400/20" />
-            <span>Tag <strong className="text-indigo-300">GEO Match</strong> menunjukkan keselarasan dengan saran kata kunci AI.</span>
+            <span>The <strong className="text-indigo-300">GEO Match</strong> tag shows alignment with AI keyword recommendations.</span>
           </div>
         </div>
 
@@ -350,7 +350,7 @@ export default function GSCDashboard({ userEmail, domain, suggestedKeywords = []
           <table className="w-full text-left text-sm border-collapse">
             <thead>
               <tr className="border-b border-slate-900 text-slate-500 text-xs font-semibold uppercase tracking-wider bg-slate-950/40">
-                <th className="py-4 px-6">Query / Kata Kunci</th>
+                <th className="py-4 px-6">Query / Keyword</th>
                 <th className="py-4 px-6 text-right cursor-pointer hover:text-white transition" onClick={() => handleSort('clicks')}>
                   <div className="flex items-center justify-end gap-1">
                     Clicks {sortField === 'clicks' && (sortDirection === 'desc' ? <ArrowDown className="h-3 w-3" /> : <ArrowUp className="h-3 w-3" />)}
@@ -371,7 +371,7 @@ export default function GSCDashboard({ userEmail, domain, suggestedKeywords = []
                     Avg. Pos {sortField === 'position' && (sortDirection === 'desc' ? <ArrowDown className="h-3 w-3" /> : <ArrowUp className="h-3 w-3" />)}
                   </div>
                 </th>
-                <th className="py-4 px-6 text-center">Status Optimasi</th>
+                <th className="py-4 px-6 text-center">Optimization Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-900/60">
@@ -397,18 +397,17 @@ export default function GSCDashboard({ userEmail, domain, suggestedKeywords = []
                       <td className="py-4 px-6 text-center">
                         {match ? (
                           <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-400 bg-emerald-500/5 px-2.5 py-1 rounded-lg border border-emerald-500/10">
-                            Terarah (GEO-Ready)
+                            GEO-Ready
                           </span>
                         ) : (
                           <div className="flex justify-center">
                             <button
                               onClick={() => {
-                                // Scroll or redirect to GEO audits if desired, but this shows optimization potential
-                                alert(`Rekomendasi optimasi untuk "${item.query}":\nTambahkan konten kaya informasi (SCU) pada website dan perbarui llms.txt Anda agar AI search engine mulai mengutip halaman Anda.`);
+                                alert(`GEO Optimization recommendation for "${item.query}":\nAdd high information density content (SCUs) to your website and update your llms.txt file so that AI search engines start citing your pages.`);
                               }}
                               className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1 hover:underline cursor-pointer"
                             >
-                              Optimasi GEO <ArrowUpRight className="h-3.5 w-3.5" />
+                              Optimize GEO <ArrowUpRight className="h-3.5 w-3.5" />
                             </button>
                           </div>
                         )}
@@ -419,7 +418,7 @@ export default function GSCDashboard({ userEmail, domain, suggestedKeywords = []
               ) : (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-slate-500 text-sm">
-                    Tidak ada kata kunci yang ditemukan untuk periode ini.
+                    No keywords found for this period.
                   </td>
                 </tr>
               )}

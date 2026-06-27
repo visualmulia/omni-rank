@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Search, Sparkles, Zap, ShieldAlert, AlertTriangle, RefreshCw } from 'lucide-react';
 import Dashboard from '@/components/Dashboard';
 
@@ -153,9 +154,15 @@ export default function Home() {
                 <img src="/logo.png" alt="OmniRank Logo" className="h-8 w-8 object-contain mr-0.5 rounded-lg" />
                 OMNI <span className="text-indigo-400">RANK</span>
               </div>
-              <div className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                Free-Tier Powered
+              <div className="flex items-center gap-4 text-xs font-semibold select-none">
+                <div className="text-muted-foreground flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  Free-Tier Powered
+                </div>
+                <span className="text-slate-800">|</span>
+                <Link href="/blog" className="text-slate-400 hover:text-indigo-400 transition-colors">
+                  Blog
+                </Link>
               </div>
             </div>
           </header>
@@ -181,9 +188,15 @@ export default function Home() {
             <img src="/logo.png" alt="OmniRank Logo" className="h-8 w-8 object-contain mr-0.5 rounded-lg" />
             OMNI <span className="text-indigo-400">RANK</span>
           </div>
-          <div className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
-            GEO Audit Tool
+          <div className="flex items-center gap-4 text-xs font-semibold select-none">
+            <div className="text-muted-foreground flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+              GEO Audit Tool
+            </div>
+            <span className="text-slate-800">|</span>
+            <Link href="/blog" className="text-slate-400 hover:text-indigo-400 transition-colors">
+              Blog
+            </Link>
           </div>
         </div>
       </header>
