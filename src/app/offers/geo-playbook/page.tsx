@@ -21,12 +21,22 @@ export default function PlaybookOfferPage() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [downloadToken, setDownloadToken] = useState<string | null>(null);
+  const [tokenLoading, setTokenLoading] = useState(false);
 
   // Check for successful payment redirect
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      if (params.get('payment_success') === 'true') {
+      const isSuccess = params.get('payment_success') === 'true';
+      
+      const storedName = localStorage.getItem('playbook_checkout_name') || '';
+      const storedEmail = localStorage.getItem('playbook_checkout_email') || '';
+
+      if (storedName) setName(storedName);
+      if (storedEmail) setEmail(storedEmail);
+
+      if (isSuccess) {
         setSuccess(true);
         // Clean query parameters from URL
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -34,11 +44,53 @@ export default function PlaybookOfferPage() {
     }
   }, []);
 
+  // Poll for purchase completion token when redirected back with payment_success
+  useEffect(() => {
+    if (!success || !email) return;
+
+    setTokenLoading(true);
+    let attempts = 0;
+    const maxAttempts = 15; // 45 seconds total
+
+    const fetchToken = async () => {
+      try {
+        const res = await fetch(`/api/purchases/status?email=${encodeURIComponent(email)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.token) {
+            setDownloadToken(data.token);
+            setTokenLoading(false);
+            clearInterval(intervalId);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching download token:', err);
+      }
+
+      attempts++;
+      if (attempts >= maxAttempts) {
+        setTokenLoading(false);
+        clearInterval(intervalId);
+      }
+    };
+
+    fetchToken();
+    const intervalId = setInterval(fetchToken, 3000);
+
+    return () => clearInterval(intervalId);
+  }, [success, email]);
+
   const handleDetailsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email) return;
 
     setLoading(true);
+
+    // Save details locally to preserve state on redirect back
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('playbook_checkout_name', name);
+      localStorage.setItem('playbook_checkout_email', email);
+    }
 
     try {
       // Save as pending subscriber/lead before redirecting (cart abandonment capture)
@@ -170,17 +222,42 @@ export default function PlaybookOfferPage() {
                 <div className="space-y-2">
                   <h3 className="font-extrabold text-xl text-slate-100">Purchase Successful!</h3>
                   <p className="text-xs text-slate-400 leading-relaxed max-w-xs mx-auto">
-                    Thank you for your order, <strong>{name}</strong>. We have sent a download link for the **GEO Action Pack & Template Library 2026** directly to <strong>{email}</strong>.
+                    Thank you for your order{name ? `, ${name}` : ''}. We have sent your private access link directly to <strong>{email || 'your email'}</strong>.
                   </p>
                 </div>
                 <div className="pt-4">
-                  <a
-                    href="/downloads/geo-checklist-2026.txt"
-                    download
-                    className="inline-flex items-center justify-center gap-2 w-full h-11 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-indigo-600/20 transition cursor-pointer"
-                  >
-                    Download Playbook Assets
-                  </a>
+                  {downloadToken ? (
+                    <a
+                      href={`/api/download?token=${downloadToken}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 w-full h-11 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-indigo-600/20 transition cursor-pointer"
+                    >
+                      <Sparkles className="h-4 w-4" />
+                      Access Playbook (Notion Workspace)
+                    </a>
+                  ) : tokenLoading ? (
+                    <button
+                      disabled
+                      className="inline-flex items-center justify-center gap-2 w-full h-11 bg-indigo-950/40 border border-indigo-500/20 text-indigo-400 font-bold text-xs rounded-xl transition cursor-not-allowed"
+                    >
+                      <RefreshCw className="h-4 w-4 animate-spin" />
+                      Verifying purchase & generating link...
+                    </button>
+                  ) : (
+                    <div className="space-y-3">
+                      <p className="text-[10px] text-slate-500 leading-relaxed">
+                        Access token is being prepared. Check your email or try refreshing the access checker below.
+                      </p>
+                      <button
+                        onClick={() => window.location.reload()}
+                        className="inline-flex items-center justify-center gap-2 w-full h-11 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 font-bold text-xs rounded-xl transition cursor-pointer"
+                      >
+                        <RefreshCw className="h-3.5 w-3.5" />
+                        Check Access Again
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (
