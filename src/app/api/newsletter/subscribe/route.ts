@@ -34,33 +34,37 @@ export async function POST(request: Request) {
       },
     });
 
-    // 2. Simulated / local database saving
-    const dir = path.dirname(SUBSCRIBERS_FILE);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-
-    let subscribers = [];
-    if (fs.existsSync(SUBSCRIBERS_FILE)) {
-      try {
-        const fileContent = fs.readFileSync(SUBSCRIBERS_FILE, 'utf-8');
-        subscribers = JSON.parse(fileContent);
-      } catch (err) {
-        console.error('Error reading subscribers file:', err);
+    // 2. Simulated / local database saving (wrapped in try-catch to avoid read-only filesystem errors on Vercel)
+    try {
+      const dir = path.dirname(SUBSCRIBERS_FILE);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
       }
-    }
 
-    // Check if already subscribed to avoid duplicate logs in the file
-    const exists = subscribers.some((sub: any) => sub.email.toLowerCase() === email.toLowerCase() && sub.leadMagnet === leadMagnet);
-    
-    if (!exists) {
-      subscribers.push({
-        email,
-        name: name || null,
-        leadMagnet: leadMagnet || null,
-        timestamp: new Date().toISOString(),
-      });
-      fs.writeFileSync(SUBSCRIBERS_FILE, JSON.stringify(subscribers, null, 2));
+      let subscribers = [];
+      if (fs.existsSync(SUBSCRIBERS_FILE)) {
+        try {
+          const fileContent = fs.readFileSync(SUBSCRIBERS_FILE, 'utf-8');
+          subscribers = JSON.parse(fileContent);
+        } catch (err) {
+          console.error('Error reading subscribers file:', err);
+        }
+      }
+
+      // Check if already subscribed to avoid duplicate logs in the file
+      const exists = subscribers.some((sub: any) => sub.email.toLowerCase() === email.toLowerCase() && sub.leadMagnet === leadMagnet);
+      
+      if (!exists) {
+        subscribers.push({
+          email,
+          name: name || null,
+          leadMagnet: leadMagnet || null,
+          timestamp: new Date().toISOString(),
+        });
+        fs.writeFileSync(SUBSCRIBERS_FILE, JSON.stringify(subscribers, null, 2));
+      }
+    } catch (fsErr) {
+      console.warn('Local subscribers file logging skipped (ephemeral/read-only filesystem on Vercel):', fsErr);
     }
 
     // 2. Real API Integration check (ConvertKit / Mailchimp)
