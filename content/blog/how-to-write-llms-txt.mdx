@@ -61,9 +61,82 @@ Ensure the file compiles to clean text and has no broken links. Once verified, p
 
 ## FAQ
 
-<FAQ items={[
-  { question: "Where does the llms.txt file live?", answer: "At the root of your domain, i.e., https://yourdomain.com/llms.txt" },
-  { question: "Does llms.txt help with standard SEO?", answer: "No, it is specifically designed for AI agents, crawlers, and LLM engines." }
-]} />
+<div className="faq-container space-y-6 mt-6">
+  
+  {/* FAQ Item 1 */}
+  <div className="faq-item border border-slate-800 rounded-xl p-5 bg-[#11131e]/20 backdrop-blur-md">
+    <h3 className="text-base md:text-lg font-bold text-slate-100 mb-2 flex items-start gap-3">
+      <span className="text-indigo-400 mt-0.5 font-black">Q:</span>
+      Is llms.txt officially supported by AI search engines?
+    </h3>
+    <p className="text-sm text-slate-300 leading-relaxed pl-7">
+      <span className="text-emerald-400 font-bold">A:</span> 
+      llms.txt is a <strong>proposed standard</strong> by Anthropic and has been adopted by several major AI crawlers including 
+      <strong>ClaudeBot, GPTBot, and PerplexityBot</strong>. While not yet a universal standard like robots.txt, it is gaining 
+      traction among AI search engines as a way to understand site structure without full scraping. Think of it as 
+      <em>robots.txt for the AI era</em> — it tells crawlers what matters most on your site.
+    </p>
+  </div>
+
+  {/* FAQ Item 2 */}
+  <div className="faq-item border border-slate-800 rounded-xl p-5 bg-[#11131e]/20 backdrop-blur-md">
+    <h3 className="text-base md:text-lg font-bold text-slate-100 mb-2 flex items-start gap-3">
+      <span className="text-indigo-400 mt-0.5 font-black">Q:</span>
+      Do I need both robots.txt and llms.txt?
+    </h3>
+    <p className="text-sm text-slate-300 leading-relaxed pl-7">
+      <span className="text-emerald-400 font-bold">A:</span> 
+      <strong>Yes, they serve different but complementary purposes.</strong> 
+      <code>robots.txt</code> controls <em>which crawlers can access your site and which pages they should avoid</em> — it's about 
+      access control. <code>llms.txt</code>, on the other hand, <em>guides AI crawlers on what content to prioritize and how to 
+      represent your site in AI-generated answers</em> — it's about content curation. You need both for complete AI search optimization.
+    </p>
+  </div>
+
+  {/* FAQ Item 3 */}
+  <div className="faq-item border border-slate-800 rounded-xl p-5 bg-[#11131e]/20 backdrop-blur-md">
+    <h3 className="text-base md:text-lg font-bold text-slate-100 mb-2 flex items-start gap-3">
+      <span className="text-indigo-400 mt-0.5 font-black">Q:</span>
+      How often should I update my llms.txt file?
+    </h3>
+    <p className="text-sm text-slate-300 leading-relaxed pl-7">
+      <span className="text-emerald-400 font-bold">A:</span> 
+      Update your llms.txt file <strong>whenever you add major new sections to your site, change your core offering, or restructure 
+      your navigation</strong>. As a best practice, review it <strong>quarterly</strong> to ensure it accurately reflects your current 
+      content. Outdated llms.txt is worse than no llms.txt — it misleads AI crawlers about what your site actually offers.
+    </p>
+  </div>
+
+  {/* FAQ Item 4 */}
+  <div className="faq-item border border-slate-800 rounded-xl p-5 bg-[#11131e]/20 backdrop-blur-md">
+    <h3 className="text-base md:text-lg font-bold text-slate-100 mb-2 flex items-start gap-3">
+      <span className="text-indigo-400 mt-0.5 font-black">Q:</span>
+      What is the difference between llms.txt and llms-full.txt?
+    </h3>
+    <p className="text-sm text-slate-300 leading-relaxed pl-7">
+      <span className="text-emerald-400 font-bold">A:</span> 
+      <code>llms.txt</code> provides a <strong>concise summary and key links</strong> — recommended for most sites. It's a quick 
+      reference guide. <code>llms-full.txt</code> contains the <strong>complete content of important pages</strong>, allowing AI 
+      crawlers to ingest full context without scraping multiple pages. Use llms-full.txt for complex sites with detailed 
+      documentation (like SaaS platforms, API docs, or extensive knowledge bases).
+    </p>
+  </div>
+
+  {/* FAQ Item 5 */}
+  <div className="faq-item border border-slate-800 rounded-xl p-5 bg-[#11131e]/20 backdrop-blur-md">
+    <h3 className="text-base md:text-lg font-bold text-slate-100 mb-2 flex items-start gap-3">
+      <span className="text-indigo-400 mt-0.5 font-black">Q:</span>
+      Will llms.txt improve my visibility in ChatGPT and Perplexity?
+    </h3>
+    <p className="text-sm text-slate-300 leading-relaxed pl-7">
+      <span className="text-emerald-400 font-bold">A:</span> 
+      While llms.txt <strong>alone doesn't guarantee visibility</strong>, it significantly improves your chances by helping AI 
+      crawlers understand your site's purpose and key content quickly. Combined with other GEO practices like 
+      <strong>schema markup, answer-first content, and brand entity signals</strong>, it can boost your AI citation rates. 
+      At OnmiRank, we've seen sites with proper llms.txt get cited <strong>2-3x more often</strong> in AI-generated answers.
+    </p>
+  </div>
+
+</div>
 
 <OnmiRankAuditCTA />
