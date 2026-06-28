@@ -102,6 +102,10 @@ export default function Home() {
               }
               setAuditData(data.audit);
               setSubscriptionTier(data.subscriptionTier || 'free');
+              try {
+                if (urlEmail) localStorage.setItem('omnirank_user_email', urlEmail);
+                if (data.audit.domain) localStorage.setItem('omnirank_user_domain', data.audit.domain);
+              } catch (e) {}
             } catch (err: any) {
               console.error(err);
               setError(err.message || 'Something went wrong. Please try again.');
@@ -110,6 +114,43 @@ export default function Home() {
             }
           };
           runAudit();
+        }
+      } else {
+        // Autoload session for returning users from localStorage
+        try {
+          const savedEmail = localStorage.getItem('omnirank_user_email');
+          const savedDomain = localStorage.getItem('omnirank_user_domain');
+          if (savedEmail && savedDomain) {
+            setLoading(true);
+            setError(null);
+            setEmail(savedEmail);
+            setUrl(savedDomain);
+            fetch(`/api/audits?email=${encodeURIComponent(savedEmail)}&domain=${encodeURIComponent(savedDomain)}`)
+              .then((res) => {
+                if (!res.ok) throw new Error('Session expired');
+                return res.json();
+              })
+              .then((data) => {
+                if (data.audit) {
+                  setAuditData(data.audit);
+                  setSubscriptionTier(data.subscriptionTier || 'free');
+                }
+              })
+              .catch((err) => {
+                console.warn('[Session Auto-Load Failed]', err);
+                try {
+                  localStorage.removeItem('omnirank_user_email');
+                  localStorage.removeItem('omnirank_user_domain');
+                } catch (clearErr) {}
+                setEmail('');
+                setUrl('');
+              })
+              .finally(() => {
+                setLoading(false);
+              });
+          }
+        } catch (e) {
+          console.warn('localStorage is blocked in this browser mode:', e);
         }
       }
     }
@@ -140,6 +181,12 @@ export default function Home() {
 
       setAuditData(data.audit);
       setSubscriptionTier(data.subscriptionTier || 'free');
+      try {
+        if (email) localStorage.setItem('omnirank_user_email', email);
+        if (data.audit.domain) localStorage.setItem('omnirank_user_domain', data.audit.domain);
+      } catch (e) {
+        console.warn('localStorage is blocked:', e);
+      }
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'Something went wrong. Please try again.');
@@ -153,6 +200,14 @@ export default function Home() {
     setUrl('');
     setEmail('');
     setError(null);
+    try {
+      localStorage.removeItem('omnirank_user_email');
+      localStorage.removeItem('omnirank_user_domain');
+    } catch (e) {
+      console.warn('localStorage is blocked:', e);
+    }
+    // Redirect to clear URL parameters and reset interface
+    window.location.href = '/';
   };
 
   // Render Dashboard if audit is complete
