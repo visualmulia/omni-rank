@@ -70,6 +70,32 @@ export async function POST(req: NextRequest) {
 
     const domain = parsedUrl.hostname;
 
+    // Plan limits verification
+    if (email) {
+      const dbUser = await prisma.user.findUnique({
+        where: { email },
+      });
+      
+      if (dbUser) {
+        const userAudits = await prisma.audit.findMany({
+          where: { userId: dbUser.id, status: 'completed' },
+          select: { domain: true },
+        });
+        const uniqueDomains = new Set(userAudits.map(a => a.domain));
+        
+        if (!uniqueDomains.has(domain)) {
+          const tier = dbUser.subscriptionTier || 'free';
+          const limit = tier === 'free' ? 1 : tier === 'pro' ? 5 : 99999;
+          
+          if (uniqueDomains.size >= limit) {
+            return NextResponse.json({
+              error: `Workspace Limit Reached: Your ${tier.toUpperCase()} plan is limited to ${limit} website workspace(s). Please upgrade to add more domains.`
+            }, { status: 403 });
+          }
+        }
+      }
+    }
+
     // 2. Perform Crawling
     const crawledData = await crawlPage(normalizedUrl);
 

@@ -164,21 +164,41 @@ export default function ProfileClient({ user, purchases }: ProfileClientProps) {
               {user.subscriptionTier === 'free' ? (
                 <Link 
                   href="/pricing"
-                  className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-xl transition text-center text-xs flex items-center justify-center gap-1.5"
+                  className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-xl transition text-center text-xs flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Sparkles className="h-3.5 w-3.5 fill-white" />
                   Upgrade Plan
                 </Link>
               ) : (
-                <a 
-                  href="https://polar.sh/customer"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="w-full bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 font-semibold py-2.5 rounded-xl transition text-center text-xs flex items-center justify-center gap-1.5"
-                >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  Manage Billing
-                </a>
+                <div className="space-y-4">
+                  <a 
+                    href="https://polar.sh/customer"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 font-semibold py-2.5 rounded-xl transition text-center text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    Manage Billing
+                  </a>
+
+                  {user.subscriptionTier === 'pro' && (
+                    <div className="pt-4 border-t border-slate-900/60 text-left">
+                      <div className="flex items-center gap-1.5 text-indigo-400 font-black text-[10px] uppercase tracking-wider mb-1.5">
+                        <Sparkles className="h-3 w-3 fill-indigo-400" />
+                        Upgrade to Agency
+                      </div>
+                      <p className="text-[10px] text-slate-400 leading-relaxed mb-2.5">
+                        Track unlimited client websites, generate custom reports, and enable high-frequency sweeps.
+                      </p>
+                      <Link 
+                        href="/pricing"
+                        className="w-full bg-gradient-to-r from-indigo-650 to-violet-650 hover:from-indigo-600 hover:to-violet-600 text-white font-semibold py-1.5 rounded-lg transition text-center text-[10px] flex items-center justify-center gap-1 cursor-pointer shadow-lg shadow-indigo-650/15"
+                      >
+                        Explore Agency Plan
+                      </Link>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </div>
