@@ -172,7 +172,7 @@ export default function ProfileClient({ user, purchases }: ProfileClientProps) {
               ) : (
                 <div className="space-y-4">
                   <a 
-                    href="https://polar.sh/customer"
+                    href="https://sandbox.polar.sh/purchases"
                     target="_blank"
                     rel="noreferrer"
                     className="w-full bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 font-semibold py-2.5 rounded-xl transition text-center text-xs flex items-center justify-center gap-1.5 cursor-pointer"
@@ -192,7 +192,7 @@ export default function ProfileClient({ user, purchases }: ProfileClientProps) {
                       </p>
                       <Link 
                         href="/pricing"
-                        className="w-full bg-gradient-to-r from-indigo-650 to-violet-650 hover:from-indigo-600 hover:to-violet-600 text-white font-semibold py-1.5 rounded-lg transition text-center text-[10px] flex items-center justify-center gap-1 cursor-pointer shadow-lg shadow-indigo-650/15"
+                        className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold py-1.5 rounded-lg transition text-center text-[10px] flex items-center justify-center gap-1 cursor-pointer shadow-lg shadow-indigo-600/20"
                       >
                         Explore Agency Plan
                       </Link>
@@ -250,8 +250,8 @@ export default function ProfileClient({ user, purchases }: ProfileClientProps) {
                           href={`/api/download?token=${p.downloadToken}`}
                           className="inline-flex items-center gap-1 bg-indigo-950/60 hover:bg-indigo-950 text-indigo-400 font-semibold py-1.5 px-3 rounded-lg border border-indigo-500/20 transition hover:border-indigo-500/40"
                         >
-                          <Download className="h-3 w-3" />
-                          Download PDF
+                          <ExternalLink className="h-3 w-3" />
+                          Access Notion
                         </Link>
                       </td>
                     </tr>
