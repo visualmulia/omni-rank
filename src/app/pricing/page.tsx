@@ -16,6 +16,46 @@ import { siteConfig } from '@/config/site';
 
 export default function PricingPage() {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
+  const [email, setEmail] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const urlEmail = params.get('email');
+      if (urlEmail) {
+        setEmail(urlEmail);
+        localStorage.setItem('omnirank_user_email', urlEmail);
+      } else {
+        const savedEmail = localStorage.getItem('omnirank_user_email');
+        if (savedEmail) {
+          setEmail(savedEmail);
+        }
+      }
+    }
+  }, []);
+
+  const proMonthly = process.env.NEXT_PUBLIC_POLAR_PRO_MONTHLY_CHECKOUT_URL || '#';
+  const proYearly = process.env.NEXT_PUBLIC_POLAR_PRO_YEARLY_CHECKOUT_URL || '#';
+  const agencyMonthly = process.env.NEXT_PUBLIC_POLAR_AGENCY_MONTHLY_CHECKOUT_URL || '#';
+  const agencyYearly = process.env.NEXT_PUBLIC_POLAR_AGENCY_YEARLY_CHECKOUT_URL || '#';
+
+  const getUpgradeUrl = (planName: string, period: 'monthly' | 'yearly') => {
+    if (!email) {
+      return '/api/auth/google/redirect';
+    }
+    
+    let baseUrl = '#';
+    if (planName === 'Pro Plan') {
+      baseUrl = period === 'monthly' ? proMonthly : proYearly;
+    } else if (planName === 'Agency Plan') {
+      baseUrl = period === 'monthly' ? agencyMonthly : agencyYearly;
+    }
+
+    if (baseUrl === '#') return '#';
+
+    const separator = baseUrl.includes('?') ? '&' : '?';
+    return `${baseUrl}${separator}customer_email=${encodeURIComponent(email)}`;
+  };
 
   const plans = [
     {
@@ -211,7 +251,7 @@ export default function PricingPage() {
 
               <div className="pt-8">
                 <Link
-                  href={p.href}
+                  href={p.name === 'Free Plan' ? '/' : getUpgradeUrl(p.name, billingPeriod)}
                   className={`w-full h-11 rounded-xl font-bold text-xs flex items-center justify-center transition shadow-md ${
                     p.popular
                       ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/10'

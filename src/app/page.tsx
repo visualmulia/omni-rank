@@ -50,6 +50,10 @@ export default function Home() {
         setError(null);
         setEmail(urlEmail);
         setUrl(urlDomain);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('omnirank_user_email', urlEmail);
+          localStorage.setItem('omnirank_user_domain', urlDomain);
+        }
         
         fetch(`/api/audits?email=${encodeURIComponent(urlEmail)}&domain=${encodeURIComponent(urlDomain)}`)
           .then((res) => {
