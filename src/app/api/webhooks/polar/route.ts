@@ -110,7 +110,60 @@ export async function POST(request: Request) {
     const payload = JSON.parse(rawBody);
     console.log(`[POLAR WEBHOOK] Event received: ${payload.type}`);
 
-    // We only process order.created events
+    // Handle Subscription Lifecycle Events
+    if (payload.type === 'subscription.created' || payload.type === 'subscription.updated') {
+      const subscription = payload.data;
+      const customer = subscription.customer;
+      const email = (customer?.email || subscription.customer_email || '').toLowerCase();
+      
+      if (!email) {
+        return NextResponse.json({ error: 'No customer email found in subscription.' }, { status: 400 });
+      }
+
+      const productId = subscription.product_id;
+      const status = subscription.ended_at ? 'inactive' : 'active';
+      
+      let tier = 'free';
+      if (productId === process.env.POLAR_PRO_PRODUCT_ID) {
+        tier = 'pro';
+      } else if (productId === process.env.POLAR_AGENCY_PRODUCT_ID) {
+        tier = 'agency';
+      }
+
+      if (tier !== 'free') {
+        // Update user's subscription tier
+        await prisma.user.update({
+          where: { email },
+          data: {
+            subscriptionTier: tier,
+            subscriptionStatus: status,
+          },
+        });
+        console.log(`[POLAR WEBHOOK] Upgraded user ${email} to tier: ${tier} (status: ${status})`);
+      }
+      return NextResponse.json({ success: true, message: 'Subscription processed.' });
+    }
+
+    if (payload.type === 'subscription.revoked' || payload.type === 'subscription.canceled') {
+      const subscription = payload.data;
+      const customer = subscription.customer;
+      const email = (customer?.email || subscription.customer_email || '').toLowerCase();
+
+      if (email) {
+        // Revert user to free tier
+        await prisma.user.update({
+          where: { email },
+          data: {
+            subscriptionTier: 'free',
+            subscriptionStatus: 'inactive',
+          },
+        });
+        console.log(`[POLAR WEBHOOK] Revoked subscription for ${email}. Reverted to free tier.`);
+      }
+      return NextResponse.json({ success: true, message: 'Subscription revoked processed.' });
+    }
+
+    // We only process order.created events for one-time products
     if (payload.type !== 'order.created') {
       return NextResponse.json({ success: true, message: 'Event ignored.' });
     }
