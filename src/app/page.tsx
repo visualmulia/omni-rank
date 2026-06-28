@@ -152,18 +152,22 @@ export default function Home() {
   };
 
   const handleReset = () => {
-    setAuditData(null);
-    setUrl('');
-    setEmail('');
-    setError(null);
-    try {
-      localStorage.removeItem('omnirank_user_email');
-      localStorage.removeItem('omnirank_user_domain');
-    } catch (e) {
-      console.warn('localStorage is blocked:', e);
+    if (isAuthenticated) {
+      window.location.href = '/projects';
+    } else {
+      setAuditData(null);
+      setUrl('');
+      setEmail('');
+      setError(null);
+      try {
+        localStorage.removeItem('omnirank_user_email');
+        localStorage.removeItem('omnirank_user_domain');
+      } catch (e) {
+        console.warn('localStorage is blocked:', e);
+      }
+      // Redirect to clear URL parameters and reset interface
+      window.location.href = '/';
     }
-    // Redirect to clear URL parameters and reset interface
-    window.location.href = '/';
   };
 
   // Render Dashboard if audit is complete
@@ -176,9 +180,19 @@ export default function Home() {
         <div className={`flex-grow flex flex-col ${isOverlayVisible ? 'blur-md pointer-events-none select-none' : ''}`}>
           <header className="border-b border-slate-900 bg-slate-950/40 backdrop-blur-md sticky top-0 z-50 print:hidden">
             <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-              <div className="flex items-center gap-2 font-black text-xl tracking-tight text-white">
-                <img src="/logo.png" alt="OmniRank Logo" className="h-8 w-8 object-contain mr-0.5 rounded-lg" />
-                OMNI <span className="text-indigo-400">RANK</span>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 font-black text-xl tracking-tight text-white select-none">
+                  <img src="/logo.png" alt="OmniRank Logo" className="h-8 w-8 object-contain mr-0.5 rounded-lg" />
+                  OMNI <span className="text-indigo-400">RANK</span>
+                </div>
+                {isAuthenticated && (
+                  <Link 
+                    href="/projects" 
+                    className="text-xs text-slate-400 hover:text-indigo-400 transition ml-2 border-l border-slate-800 pl-4 py-1"
+                  >
+                    ← Back to Workspaces
+                  </Link>
+                )}
               </div>
               <div className="flex items-center gap-4 text-xs font-semibold select-none">
                 <div className="text-muted-foreground flex items-center gap-1.5">

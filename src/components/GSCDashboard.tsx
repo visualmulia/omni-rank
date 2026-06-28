@@ -157,9 +157,9 @@ export default function GSCDashboard({ userEmail, domain, suggestedKeywords = []
                 </span>
                 <span className="text-slate-400 text-xs">Previewing {domain}</span>
               </div>
-              <h2 className="text-white font-bold text-lg mt-1.5">Hubungkan Live Search Console Kamu!</h2>
+              <h2 className="text-white font-bold text-lg mt-1.5">Connect Your Live Search Console!</h2>
               <p className="text-slate-400 text-sm mt-1 max-w-xl">
-                Saat ini kamu melihat data simulasi Search Console. Hubungkan GSC asli kamu secara instan untuk melihat performa klik, impression, dan keyword organic secara real-time.
+                You are currently viewing simulated Search Console data. Connect your real Google Search Console account to view real-time clicks, impressions, and organic keywords performance.
               </p>
             </div>
           </div>
@@ -169,7 +169,7 @@ export default function GSCDashboard({ userEmail, domain, suggestedKeywords = []
               <div className="flex flex-col gap-1 min-w-[200px]">
                 <input 
                   type="email"
-                  placeholder="Masukkan Email Google"
+                  placeholder="Enter Google Email"
                   value={inputEmail}
                   onChange={(e) => {
                     setInputEmail(e.target.value);
@@ -177,7 +177,7 @@ export default function GSCDashboard({ userEmail, domain, suggestedKeywords = []
                   }}
                   className={`px-4 py-2.5 text-xs rounded-xl bg-[#090b11] border ${emailError ? 'border-red-500' : 'border-slate-800 focus:border-indigo-500'} text-slate-100 placeholder:text-slate-600 outline-none transition duration-200`}
                 />
-                {emailError && <span className="text-[10px] text-red-500 font-semibold pl-1">Email wajib diisi</span>}
+                {emailError && <span className="text-[10px] text-red-500 font-semibold pl-1">Email is required</span>}
               </div>
             )}
             
@@ -186,7 +186,7 @@ export default function GSCDashboard({ userEmail, domain, suggestedKeywords = []
               className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/30 hover:scale-[1.01] transition-all duration-200 text-sm whitespace-nowrap self-stretch sm:self-center cursor-pointer"
             >
               <Globe className="h-4 w-4" />
-              Hubungkan Real GSC
+              Connect Real GSC
             </button>
           </div>
         </div>

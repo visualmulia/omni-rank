@@ -6,11 +6,15 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const email = searchParams.get('email');
+    const domain = searchParams.get('domain');
 
     if (!email) {
       // If no email, return all active tracked queries globally for MVP simplicity
       const queries = await prisma.trackedQuery.findMany({
-        where: { isActive: true },
+        where: { 
+          isActive: true,
+          ...(domain ? { domain: { equals: domain, mode: 'insensitive' } } : {}),
+        },
         orderBy: { createdAt: 'desc' },
       });
       return NextResponse.json({ success: true, queries });
@@ -25,7 +29,11 @@ export async function GET(req: NextRequest) {
     }
 
     const queries = await prisma.trackedQuery.findMany({
-      where: { userId: user.id, isActive: true },
+      where: { 
+        userId: user.id, 
+        isActive: true,
+        ...(domain ? { domain: { equals: domain, mode: 'insensitive' } } : {}),
+      },
       orderBy: { createdAt: 'desc' },
     });
 
@@ -40,7 +48,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { query, email } = body;
+    const { query, email, domain } = body;
 
     if (!query) {
       return NextResponse.json({ error: 'Query keyword is required' }, { status: 400 });
@@ -59,10 +67,21 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Check if query is already tracked
+    // Resolve domain to save
+    let targetDomain = domain;
+    if (!targetDomain) {
+      const latestAudit = await prisma.audit.findFirst({
+        where: { userId: user.id, status: 'completed' },
+        orderBy: { createdAt: 'desc' },
+      });
+      targetDomain = latestAudit?.domain || 'zenbird.web.id';
+    }
+
+    // Check if query is already tracked for this domain
     const existing = await prisma.trackedQuery.findFirst({
       where: {
         userId: user.id,
+        domain: targetDomain,
         query: query.trim(),
         isActive: true,
       },
@@ -75,6 +94,7 @@ export async function POST(req: NextRequest) {
     const newQuery = await prisma.trackedQuery.create({
       data: {
         userId: user.id,
+        domain: targetDomain,
         query: query.trim(),
         isActive: true,
       },

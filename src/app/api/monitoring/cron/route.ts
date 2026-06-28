@@ -30,13 +30,7 @@ export async function GET(req: NextRequest) {
 
     // Process each query
     for (const queryItem of activeQueries) {
-      // Find the user's most recent audited domain
-      const latestAudit = await prisma.audit.findFirst({
-        where: { userId: queryItem.userId, status: 'completed' },
-        orderBy: { createdAt: 'desc' },
-      });
-
-      const domainToTrack = latestAudit?.domain || 'zenbird.web.id';
+      const domainToTrack = queryItem.domain || 'zenbird.web.id';
 
       // We ask Gemini to simulate ChatGPT, Perplexity, and Claude search results,
       // and run a real search-like response for Gemini.

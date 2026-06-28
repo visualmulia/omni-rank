@@ -5,6 +5,7 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const email = searchParams.get('email');
+    const domain = searchParams.get('domain');
 
     // Default target email if none provided
     const targetEmail = email || 'guest@omnirank.com';
@@ -26,16 +27,23 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // Fetch citations
+    // Fetch citations filtered by domain
     const citations = await prisma.citation.findMany({
-      where: { userId: user.id },
+      where: { 
+        userId: user.id,
+        ...(domain ? { domain: { equals: domain, mode: 'insensitive' } } : {}),
+      },
       orderBy: { trackedAt: 'desc' },
       take: 100, // limit to latest 100 for performance
     });
 
-    // Fetch queries count
+    // Fetch queries count filtered by domain
     const totalQueries = await prisma.trackedQuery.count({
-      where: { userId: user.id, isActive: true },
+      where: { 
+        userId: user.id, 
+        isActive: true,
+        ...(domain ? { domain: { equals: domain, mode: 'insensitive' } } : {}),
+      },
     });
 
     // Calculate overall stats

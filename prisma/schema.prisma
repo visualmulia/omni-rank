@@ -149,6 +149,7 @@ model TrackedQuery {
   id            String    @id @default(uuid())
   userId        String    @map("user_id")
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  domain        String    @default("zenbird.web.id")
   query         String
   isActive      Boolean   @default(true) @map("is_active")
   lastCheckedAt DateTime? @map("last_checked_at")

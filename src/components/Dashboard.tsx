@@ -188,10 +188,11 @@ export default function Dashboard({ auditData, userEmail, subscriptionTier = 'fr
     setLoadingQueries(true);
     try {
       const emailParam = userEmail ? `?email=${encodeURIComponent(userEmail)}` : '';
+      const domainParam = `&domain=${encodeURIComponent(auditData.domain)}`;
       
       const [queriesRes, citationsRes] = await Promise.all([
-        fetch(`/api/monitoring/queries${emailParam}`),
-        fetch(`/api/monitoring/citations${emailParam}`)
+        fetch(`/api/monitoring/queries${emailParam}${domainParam}`),
+        fetch(`/api/monitoring/citations${emailParam}${domainParam}`)
       ]);
 
       const queriesData = await queriesRes.json();
@@ -219,7 +220,8 @@ export default function Dashboard({ auditData, userEmail, subscriptionTier = 'fr
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           query: newQuery.trim(),
-          email: userEmail
+          email: userEmail,
+          domain: auditData.domain
         }),
       });
 
@@ -269,7 +271,8 @@ export default function Dashboard({ auditData, userEmail, subscriptionTier = 'fr
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           query: kw,
-          email: userEmail
+          email: userEmail,
+          domain: auditData.domain
         }),
       });
       const data = await response.json();
