@@ -15,24 +15,43 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(generateMockGscData(domain));
     }
 
-    // 1. Check if user and tokens exist
+    // 1. Resolve master user
     const user = await prisma.user.findUnique({
       where: { email },
     });
 
-    const isConnected = user?.gscConnected && user?.gscAccessToken && !user.gscAccessToken.startsWith('mock_');
+    if (!user) {
+      return NextResponse.json(generateMockGscData(domain));
+    }
+
+    // Find the latest audit report for this user and domain to access GSC credentials
+    const audit = await prisma.audit.findFirst({
+      where: {
+        userId: user.id,
+        domain: domain,
+      },
+      include: {
+        gscCredential: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    const gscCred = audit?.gscCredential;
+    const isConnected = gscCred && gscCred.gscAccessToken && !gscCred.gscAccessToken.startsWith('mock_');
 
     // 2. If not connected, return realistic Mock Data for Demo mode
-    if (!isConnected) {
+    if (!isConnected || !gscCred) {
       return NextResponse.json(generateMockGscData(domain));
     }
 
     // 3. Real Connection Flow - Refresh Token if expired
-    let accessToken = user.gscAccessToken!;
-    const expiresAt = user.gscTokenExpiresAt;
+    let accessToken = gscCred.gscAccessToken;
+    const expiresAt = gscCred.gscTokenExpiresAt;
     const isExpired = expiresAt ? new Date() > new Date(expiresAt) : true;
 
-    if (isExpired && user.gscRefreshToken) {
+    if (isExpired && gscCred.gscRefreshToken) {
       const clientId = process.env.GOOGLE_CLIENT_ID;
       const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
@@ -44,7 +63,7 @@ export async function GET(req: NextRequest) {
             body: new URLSearchParams({
               client_id: clientId,
               client_secret: clientSecret,
-              refresh_token: user.gscRefreshToken,
+              refresh_token: gscCred.gscRefreshToken,
               grant_type: 'refresh_token',
             }),
           });
@@ -55,9 +74,9 @@ export async function GET(req: NextRequest) {
             const expiresIn = refreshData.expires_in || 3600;
             const newExpiry = new Date(Date.now() + expiresIn * 1000);
 
-            // Update in DB
-            await prisma.user.update({
-              where: { id: user.id },
+            // Update credentials in GscCredential table
+            await prisma.gscCredential.update({
+              where: { id: gscCred.id },
               data: {
                 gscAccessToken: accessToken,
                 gscTokenExpiresAt: newExpiry,
@@ -73,7 +92,7 @@ export async function GET(req: NextRequest) {
     }
 
     // 4. Fetch GSC Data from Google Webmasters API
-    const siteUrl = user.gscSiteUrl || `sc-domain:${domain}`;
+    const siteUrl = gscCred.gscSiteUrl || `sc-domain:${domain}`;
     const encodedSiteUrl = encodeURIComponent(siteUrl);
 
     const thirtyDaysAgo = new Date();

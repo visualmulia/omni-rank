@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Search, Sparkles, Zap, ShieldAlert, AlertTriangle, RefreshCw } from 'lucide-react';
+import { Search, Sparkles, Zap, ShieldAlert, AlertTriangle, RefreshCw, User as UserIcon } from 'lucide-react';
 import Dashboard from '@/components/Dashboard';
 
 export default function Home() {
@@ -13,6 +13,8 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [auditData, setAuditData] = useState<any | null>(null);
   const [subscriptionTier, setSubscriptionTier] = useState<string>('free');
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [paymentSuccess, setPaymentSuccess] = useState<boolean>(false);
 
   const loadingSteps = [
     'Crawling target website content...',
@@ -36,124 +38,78 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [loading]);
 
-  // Load audit data automatically if redirected back from GSC connection flow, or prefill/start audit from blog CTA
+  // Load session state and auto-retrieve audits
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const isGscConnected = params.get('gsc_connected') === 'true';
-      const urlEmail = params.get('email');
-      const urlDomain = params.get('domain');
-      const shouldStartAudit = params.get('start_audit') === 'true';
+    fetch('/api/auth/session')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.authenticated) {
+          setIsAuthenticated(true);
+          setEmail(data.user.email);
+          setSubscriptionTier(data.user.subscriptionTier || 'free');
 
-      if (isGscConnected && urlEmail && urlDomain) {
-        setLoading(true);
-        setError(null);
-        setEmail(urlEmail);
-        setUrl(urlDomain);
-        if (typeof window !== 'undefined') {
-          try {
-            localStorage.setItem('omnirank_user_email', urlEmail);
-            localStorage.setItem('omnirank_user_domain', urlDomain);
-          } catch (e) {
-            console.warn('localStorage is disabled in this browser mode:', e);
+          const params = new URLSearchParams(window.location.search);
+          const urlDomain = params.get('domain');
+          if (params.get('payment_success') === 'true') {
+            setPaymentSuccess(true);
           }
-        }
-        
-        fetch(`/api/audits?email=${encodeURIComponent(urlEmail)}&domain=${encodeURIComponent(urlDomain)}`)
-          .then((res) => {
-            if (!res.ok) throw new Error('Failed to retrieve your latest audit.');
-            return res.json();
-          })
-          .then((data) => {
-            if (data.audit) {
-              setAuditData(data.audit);
-              setSubscriptionTier(data.subscriptionTier || 'free');
-            } else {
-              throw new Error('No completed audits found for GSC connection.');
-            }
-          })
-          .catch((err) => {
-            console.error(err);
-            setError(err.message || 'Failed to auto-load audit data after GSC connection.');
-          })
-          .finally(() => {
-            setLoading(false);
-          });
-      } else if (!isGscConnected && (urlDomain || urlEmail)) {
-        if (urlDomain) setUrl(urlDomain);
-        if (urlEmail) setEmail(urlEmail);
 
-        if (shouldStartAudit && urlDomain) {
-          const runAudit = async () => {
-            setLoading(true);
-            setError(null);
-            setAuditData(null);
-            try {
-              const response = await fetch('/api/audits', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ url: urlDomain, email: urlEmail || undefined }),
-              });
-              const data = await response.json();
-              if (!response.ok) {
-                throw new Error(data.error || 'Failed to complete GEO audit.');
+          // If domain was connected to GSC, load that domain's audit, else load latest user audit
+          const fetchUrl = urlDomain 
+            ? `/api/audits?email=${encodeURIComponent(data.user.email)}&domain=${encodeURIComponent(urlDomain)}`
+            : `/api/audits?email=${encodeURIComponent(data.user.email)}`;
+
+          setLoading(true);
+          fetch(fetchUrl)
+            .then((res) => {
+              if (!res.ok) throw new Error('No completed audits.');
+              return res.json();
+            })
+            .then((auditRes) => {
+              if (auditRes.audit) {
+                setAuditData(auditRes.audit);
+                setUrl(auditRes.audit.domain);
               }
-              setAuditData(data.audit);
-              setSubscriptionTier(data.subscriptionTier || 'free');
-              try {
-                if (urlEmail) localStorage.setItem('omnirank_user_email', urlEmail);
-                if (data.audit.domain) localStorage.setItem('omnirank_user_domain', data.audit.domain);
-              } catch (e) {}
-            } catch (err: any) {
-              console.error(err);
-              setError(err.message || 'Something went wrong. Please try again.');
-            } finally {
+            })
+            .catch((err) => {
+              console.log('No prior audits found for authenticated user:', err);
+              if (urlDomain) setUrl(urlDomain);
+            })
+            .finally(() => {
               setLoading(false);
-            }
-          };
-          runAudit();
-        }
-      } else {
-        // Autoload session for returning users from localStorage
-        try {
-          const savedEmail = localStorage.getItem('omnirank_user_email');
-          const savedDomain = localStorage.getItem('omnirank_user_domain');
-          if (savedEmail && savedDomain) {
+            });
+        } else {
+          setIsAuthenticated(false);
+          const params = new URLSearchParams(window.location.search);
+          const urlDomain = params.get('domain');
+          const urlEmail = params.get('email');
+          const shouldStartAudit = params.get('start_audit') === 'true';
+
+          if (urlDomain) setUrl(urlDomain);
+          if (urlEmail) setEmail(urlEmail);
+
+          if (shouldStartAudit && urlDomain) {
             setLoading(true);
-            setError(null);
-            setEmail(savedEmail);
-            setUrl(savedDomain);
-            fetch(`/api/audits?email=${encodeURIComponent(savedEmail)}&domain=${encodeURIComponent(savedDomain)}`)
-              .then((res) => {
-                if (!res.ok) throw new Error('Session expired');
-                return res.json();
-              })
-              .then((data) => {
-                if (data.audit) {
-                  setAuditData(data.audit);
-                  setSubscriptionTier(data.subscriptionTier || 'free');
+            fetch('/api/audits', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ url: urlDomain, email: urlEmail || undefined }),
+            })
+              .then((res) => res.json())
+              .then((auditRes) => {
+                if (auditRes.audit) {
+                  setAuditData(auditRes.audit);
                 }
               })
-              .catch((err) => {
-                console.warn('[Session Auto-Load Failed]', err);
-                try {
-                  localStorage.removeItem('omnirank_user_email');
-                  localStorage.removeItem('omnirank_user_domain');
-                } catch (clearErr) {}
-                setEmail('');
-                setUrl('');
-              })
-              .finally(() => {
-                setLoading(false);
-              });
+              .catch((err) => console.error(err))
+              .finally(() => setLoading(false));
           }
-        } catch (e) {
-          console.warn('localStorage is blocked in this browser mode:', e);
         }
-      }
-    }
+      })
+      .catch((err) => {
+        console.error('Session retrieval failed:', err);
+        setIsAuthenticated(false);
+      });
   }, []);
 
   const handleAudit = async (e: React.FormEvent) => {
@@ -212,9 +168,12 @@ export default function Home() {
 
   // Render Dashboard if audit is complete
   if (auditData) {
+    const isOverlayVisible = !isAuthenticated;
+
     return (
-      <main className="min-h-screen bg-[#06070a] text-slate-100 flex flex-col justify-between">
-        <div className="flex-grow">
+      <main className="min-h-screen bg-[#06070a] text-slate-100 flex flex-col justify-between relative">
+        {/* Blur dashboard content if guest user */}
+        <div className={`flex-grow flex flex-col ${isOverlayVisible ? 'blur-md pointer-events-none select-none' : ''}`}>
           <header className="border-b border-slate-900 bg-slate-950/40 backdrop-blur-md sticky top-0 z-50 print:hidden">
             <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
               <div className="flex items-center gap-2 font-black text-xl tracking-tight text-white">
@@ -223,19 +182,90 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-4 text-xs font-semibold select-none">
                 <div className="text-muted-foreground flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  Free-Tier Powered
+                  <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+                  <span className="capitalize">{subscriptionTier} Plan</span>
                 </div>
                 <span className="text-slate-800">|</span>
                 <Link href="/blog" className="text-slate-400 hover:text-indigo-400 transition-colors">
                   Blog
                 </Link>
+                {isAuthenticated && (
+                  <>
+                    <span className="text-slate-800">|</span>
+                    <Link href="/profile" className="text-slate-400 hover:text-indigo-400 transition-colors flex items-center gap-1.5">
+                      <UserIcon className="h-3.5 w-3.5" /> Settings & Billing
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </header>
+          {paymentSuccess && (
+            <div className="bg-emerald-950/85 border-b border-emerald-500/20 text-emerald-300 px-4 py-3 text-center text-xs font-semibold flex items-center justify-center gap-2 relative z-50 print:hidden">
+              <Sparkles className="h-4 w-4 text-emerald-400 animate-bounce" />
+              Upgrade successful! Your premium visibility features are now fully unlocked.
+              <button 
+                onClick={() => setPaymentSuccess(false)}
+                className="ml-3 hover:text-emerald-100 transition text-[10px] cursor-pointer"
+              >
+                ✕ Dismiss
+              </button>
+            </div>
+          )}
           <Dashboard auditData={auditData} userEmail={email} subscriptionTier={subscriptionTier} onReset={handleReset} />
         </div>
-        <footer className="border-t border-slate-950/80 bg-slate-950/20 py-6 text-center text-xs text-muted-foreground print:hidden">
+
+        {/* Mandatory Registration Overlay Gate */}
+        {isOverlayVisible && (
+          <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+            <div className="max-w-md w-full bg-slate-950 border border-slate-900 rounded-3xl p-8 text-center shadow-2xl relative overflow-hidden">
+              <div className="absolute top-[-30%] left-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-900/10 blur-[100px] pointer-events-none" />
+              <div className="flex items-center justify-center h-16 w-16 bg-indigo-950 border border-indigo-500/20 text-indigo-400 rounded-2xl mx-auto mb-6">
+                <Sparkles className="h-8 w-8 text-indigo-400" />
+              </div>
+              <h2 className="text-2xl font-black text-white tracking-tight mb-2">
+                GEO Audit Completed!
+              </h2>
+              <p className="text-slate-400 text-xs leading-relaxed mb-6">
+                We've processed the AI visibility checks for <span className="text-indigo-400 font-semibold">{auditData.domain}</span>. 
+                Register/Sign In to save and access your dashboard.
+              </p>
+              
+              <a
+                href={`/api/auth/google/redirect?flow=login&email=${encodeURIComponent(email || '')}&domain=${encodeURIComponent(auditData.domain)}`}
+                className="w-full bg-indigo-600 hover:bg-indigo-500 border border-indigo-550/40 text-white font-bold py-3 px-4 rounded-xl transition text-sm flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-indigo-600/15"
+              >
+                <svg className="h-4 w-4 mr-1" viewBox="0 0 24 24">
+                  <path
+                    fill="#4285F4"
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                  />
+                  <path
+                    fill="#EA4335"
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                  />
+                </svg>
+                Continue with Google
+              </a>
+              <button 
+                onClick={handleReset}
+                className="mt-4 text-xs font-semibold text-slate-500 hover:text-slate-400 transition"
+              >
+                Go Back
+              </button>
+            </div>
+          </div>
+        )}
+
+        <footer className="border-t border-slate-950/80 bg-slate-950/20 py-6 text-center text-xs text-muted-foreground print:hidden relative z-10">
           © {new Date().getFullYear()} OmniRank. AI Visibility Intelligence for Indie Hackers & SME.
         </footer>
       </main>
@@ -264,6 +294,24 @@ export default function Home() {
             <Link href="/blog" className="text-slate-400 hover:text-indigo-400 transition-colors">
               Blog
             </Link>
+            {isAuthenticated === true ? (
+              <>
+                <span className="text-slate-800">|</span>
+                <Link href="/profile" className="text-slate-400 hover:text-indigo-400 transition-colors flex items-center gap-1.5">
+                  <UserIcon className="h-3.5 w-3.5" /> Profile
+                </Link>
+              </>
+            ) : isAuthenticated === false ? (
+              <>
+                <span className="text-slate-800">|</span>
+                <Link 
+                  href="/api/auth/google/redirect?flow=login"
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-1.5 px-3.5 rounded-xl transition-all hover:shadow-lg hover:shadow-indigo-600/15"
+                >
+                  Sign In
+                </Link>
+              </>
+            ) : null}
           </div>
         </div>
       </header>

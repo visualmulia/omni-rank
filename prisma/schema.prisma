@@ -27,11 +27,6 @@ model User {
   whiteLabelLogoUrl       String?         @map("white_label_logo_url")
   whiteLabelPrimaryColor  String          @default("#0f172a") @map("white_label_primary_color")
   whiteLabelSecondaryColor String          @default("#3b82f6") @map("white_label_secondary_color")
-  gscConnected            Boolean         @default(false) @map("gsc_connected")
-  gscAccessToken          String?         @map("gsc_access_token")
-  gscRefreshToken         String?         @map("gsc_refresh_token")
-  gscTokenExpiresAt       DateTime?       @map("gsc_token_expires_at")
-  gscSiteUrl              String?         @map("gsc_site_url")
   createdAt               DateTime        @default(now()) @map("created_at")
   updatedAt               DateTime        @updatedAt @map("updated_at")
 
@@ -43,6 +38,7 @@ model User {
   payments               Payment[]
   clients                Client[]
   alerts                 Alert[]
+  gscCredentials         GscCredential[]
 
   @@map("users")
 }
@@ -66,6 +62,8 @@ model Audit {
   pdfUrl         String?       @map("pdf_url")
   isWhiteLabel   Boolean       @default(false) @map("is_white_label")
   clientId       String?       @map("client_id")
+  gscCredentialId String?      @map("gsc_credential_id")
+  gscCredential  GscCredential? @relation(fields: [gscCredentialId], references: [id], onDelete: SetNull)
   createdAt      DateTime      @default(now()) @map("created_at")
   completedAt    DateTime?     @map("completed_at")
 
@@ -244,5 +242,23 @@ model Purchase {
   updatedAt      DateTime @updatedAt @map("updated_at")
 
   @@map("purchases")
+}
+
+model GscCredential {
+  id                String    @id @default(uuid())
+  userId            String    @map("user_id")
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gscEmail          String    @map("gsc_email")
+  gscAccessToken    String    @map("gsc_access_token")
+  gscRefreshToken   String    @map("gsc_refresh_token")
+  gscTokenExpiresAt DateTime  @map("gsc_token_expires_at")
+  gscSiteUrl        String?   @map("gsc_site_url")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  audits            Audit[]
+
+  @@unique([userId, gscEmail])
+  @@map("gsc_credentials")
 }
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { encryptSession, getSession } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -16,18 +17,22 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Missing code or state parameter' }, { status: 400 });
   }
 
+  let flow = 'gsc';
   let email = '';
   let domain = '';
   try {
     const decodedState = JSON.parse(Buffer.from(stateBase64, 'base64').toString('utf-8'));
-    email = decodedState.email;
-    domain = decodedState.domain;
+    flow = decodedState.flow || 'gsc';
+    email = decodedState.email || '';
+    domain = decodedState.domain || '';
   } catch (err) {
     return NextResponse.json({ error: 'Invalid state parameter' }, { status: 400 });
   }
 
-  if (!email || !domain) {
-    return NextResponse.json({ error: 'Missing email or domain in state' }, { status: 400 });
+  const isLoginFlow = flow === 'login';
+
+  if (!isLoginFlow && (!email || !domain)) {
+    return NextResponse.json({ error: 'Missing email or domain in state for GSC connection flow.' }, { status: 400 });
   }
 
   let accessToken = '';
@@ -41,7 +46,7 @@ export async function GET(req: NextRequest) {
   const isMockCode = code.startsWith('mock_');
 
   if (!clientId || isMockCode) {
-    // Generate simulated tokens for demo purposes
+    // Generate simulated tokens for demo/sandbox purposes
     accessToken = 'mock_google_access_token_' + Math.random().toString(36).substring(2);
     refreshToken = 'mock_google_refresh_token_' + Math.random().toString(36).substring(2);
     expiresAt = new Date(Date.now() + 3600 * 1000);
@@ -67,8 +72,6 @@ export async function GET(req: NextRequest) {
       }
 
       accessToken = data.access_token;
-      // Google only returns refresh_token on the FIRST user consent redirect.
-      // If we don't get one because they re-connected, we keep the old refresh token.
       refreshToken = data.refresh_token || ''; 
       const expiresIn = data.expires_in || 3600;
       expiresAt = new Date(Date.now() + expiresIn * 1000);
@@ -78,30 +81,109 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // Update or create the User in the DB with GSC credentials
-  try {
-    const siteUrl = `sc-domain:${domain}`; // standard search console domain property format
+  // Handle LOGIN flow
+  if (isLoginFlow) {
+    let userEmail = email;
+    let userName = email ? email.split('@')[0] : 'User';
+    let avatarUrl = '';
 
-    // We do an upsert so that the user is guaranteed to exist.
-    const userUpdate: any = {
-      gscConnected: true,
-      gscAccessToken: accessToken,
-      gscTokenExpiresAt: expiresAt,
-      gscSiteUrl: siteUrl,
-    };
-
-    if (refreshToken) {
-      userUpdate.gscRefreshToken = refreshToken;
+    if (!isMockCode && clientId) {
+      try {
+        // Fetch user profile from google userinfo API
+        const profileRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        if (profileRes.ok) {
+          const profile = await profileRes.json();
+          userEmail = profile.email || userEmail;
+          userName = profile.name || userName;
+          avatarUrl = profile.picture || '';
+        }
+      } catch (profileErr) {
+        console.error('Error fetching Google user profile:', profileErr);
+      }
     }
 
-    await prisma.user.upsert({
-      where: { email },
-      update: userUpdate,
+    if (!userEmail) {
+      userEmail = 'sandbox_user_' + Math.random().toString(36).substring(2, 7) + '@omnirank.test';
+    }
+
+    try {
+      const dbUser = await prisma.user.upsert({
+        where: { email: userEmail },
+        update: {
+          name: userName,
+          avatarUrl: avatarUrl || undefined,
+        },
+        create: {
+          email: userEmail,
+          name: userName,
+          avatarUrl: avatarUrl || undefined,
+          subscriptionTier: 'free',
+          subscriptionStatus: 'inactive',
+        },
+      });
+
+      // Encrypt user details into a session cookie
+      const sessionToken = encryptSession({
+        email: dbUser.email,
+        userId: dbUser.id,
+      });
+
+      const response = NextResponse.redirect(new URL('/', req.url));
+      response.cookies.set('omnirank_session', sessionToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+      });
+
+      console.log(`Successfully logged in user: ${dbUser.email}`);
+      return response;
+    } catch (dbErr: any) {
+      console.error('Database sign-in error:', dbErr);
+      return NextResponse.json({ error: 'Database update failed: ' + dbErr.message }, { status: 500 });
+    }
+  }
+
+  // Handle GSC linking flow
+  try {
+    // 1. Resolve master user session
+    const session = await getSession();
+    const masterEmail = session?.email || email;
+
+    if (!masterEmail) {
+      return NextResponse.json({ error: 'Unauthorized: No active login session found.' }, { status: 401 });
+    }
+
+    const dbUser = await prisma.user.findUnique({
+      where: { email: masterEmail },
+    });
+
+    if (!dbUser) {
+      return NextResponse.json({ error: 'User not found in system.' }, { status: 404 });
+    }
+
+    const siteUrl = `sc-domain:${domain}`;
+
+    // 2. Save credential linked to user
+    const gscCred = await prisma.gscCredential.upsert({
+      where: {
+        userId_gscEmail: {
+          userId: dbUser.id,
+          gscEmail: email, // Google account email used to connect GSC
+        },
+      },
+      update: {
+        gscAccessToken: accessToken,
+        gscRefreshToken: refreshToken || undefined,
+        gscTokenExpiresAt: expiresAt,
+        gscSiteUrl: siteUrl,
+      },
       create: {
-        email,
-        name: email.split('@')[0],
-        subscriptionTier: 'free',
-        gscConnected: true,
+        userId: dbUser.id,
+        gscEmail: email,
         gscAccessToken: accessToken,
         gscRefreshToken: refreshToken || 'mock_refresh_token',
         gscTokenExpiresAt: expiresAt,
@@ -109,17 +191,28 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    console.log(`Successfully connected Google Search Console for user: ${email}, domain: ${domain}`);
+    // 3. Link all matching client audits for this domain to this credential
+    await prisma.audit.updateMany({
+      where: {
+        userId: dbUser.id,
+        domain: domain,
+      },
+      data: {
+        gscCredentialId: gscCred.id,
+      },
+    });
 
-    // Redirect the user back to the home page with connection flags so frontend triggers auto-reload
+    console.log(`Successfully connected Google Search Console credential (${email}) for user: ${masterEmail}, domain: ${domain}`);
+
+    // 4. Redirect user back to home page with connection details
     const redirectUrl = new URL('/', req.url);
     redirectUrl.searchParams.set('gsc_connected', 'true');
-    redirectUrl.searchParams.set('email', email);
+    redirectUrl.searchParams.set('email', masterEmail);
     redirectUrl.searchParams.set('domain', domain);
     
     return NextResponse.redirect(redirectUrl.toString());
-  } catch (dbErr: any) {
-    console.error('Failed to save GSC credentials to DB:', dbErr);
-    return NextResponse.json({ error: 'Database update failed: ' + dbErr.message }, { status: 500 });
+  } catch (err: any) {
+    console.error('Failed to save GSC credentials to DB:', err);
+    return NextResponse.json({ error: 'Database update failed: ' + err.message }, { status: 500 });
   }
 }

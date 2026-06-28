@@ -3,8 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const state = searchParams.get('state') || '';
-  const email = searchParams.get('email') || '';
+  const email = searchParams.get('email') || 'user@example.com';
   const domain = searchParams.get('domain') || '';
+  const flow = searchParams.get('flow') || 'gsc';
 
   const callbackUrl = new URL('/api/auth/google/callback', req.url);
   callbackUrl.searchParams.set('code', 'mock_google_oauth_code_xyz123');
@@ -12,14 +13,23 @@ export async function GET(req: NextRequest) {
 
   const cancelUrl = new URL('/', req.url);
 
+  const isLoginFlow = flow === 'login';
+  const titleText = isLoginFlow ? 'Sign In with Google' : 'Connect Omni Rank';
+  const subtitleText = isLoginFlow ? 'to access your master account dashboard' : 'to your Google Search Console';
+  const permissionTitle = isLoginFlow ? 'Information we will receive:' : 'Permissions requested:';
+  const permissionBody = isLoginFlow 
+    ? 'Your email address (to authenticate your account) and basic profile picture.'
+    : `View search performance metrics (clicks, impressions, keywords) for domain: <strong style="color: #ffffff; display: block; margin-top: 4px;">${domain}</strong>`;
+  const primaryButtonText = isLoginFlow ? 'Continue & Log In' : 'Authorize and Connect GSC';
+
   // Return a beautiful, themed Google Consent Mock screen
   const html = `
     <!DOCTYPE html>
-    <html lang="id">
+    <html lang="en">
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Hubungkan dengan Google Search Console</title>
+      <title>${titleText}</title>
       <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
       <style>
         body {
@@ -185,8 +195,8 @@ export async function GET(req: NextRequest) {
           <div class="google-logo">
             <span class="g">G</span><span class="o1">o</span><span class="o2">o</span><span class="g2">g</span><span class="l">l</span><span class="e">e</span>
           </div>
-          <h1>Hubungkan Omni Rank</h1>
-          <p class="subtitle">ke Google Search Console Anda</p>
+          <h1>${titleText}</h1>
+          <p class="subtitle">${subtitleText}</p>
           <div class="account-badge">
             <div class="account-dot"></div>
             <span>${email}</span>
@@ -194,23 +204,22 @@ export async function GET(req: NextRequest) {
         </div>
 
         <div class="permission-card">
-          <div class="permission-title">Izin yang Diminta:</div>
+          <div class="permission-title">${permissionTitle}</div>
           <div class="permission-item">
             <div class="permission-icon">✓</div>
             <div>
-              Melihat data performa Search Console (Clicks, Impressions, CTR, Keywords) untuk domain: 
-              <strong style="color: #ffffff; display: block; margin-top: 4px;">${domain}</strong>
+              ${permissionBody}
             </div>
           </div>
         </div>
 
         <div class="actions">
-          <a href="${callbackUrl.toString()}" class="btn btn-primary">Izinkan dan Hubungkan</a>
-          <a href="${cancelUrl.toString()}" class="btn btn-secondary">Batalkan</a>
+          <a href="${callbackUrl.toString()}" class="btn btn-primary">${primaryButtonText}</a>
+          <a href="${cancelUrl.toString()}" class="btn btn-secondary">Cancel</a>
         </div>
 
         <div class="footer-note">
-          Ini adalah mode demo simulasi (Sandbox). Data asli Google Search Console Anda akan dihubungkan secara aman jika Google Client ID dikonfigurasi.
+          This is a simulated sandbox login flow for development. Real connection details are managed securely if Google OAuth Credentials are configured.
         </div>
       </div>
     </body>

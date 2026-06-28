@@ -9,13 +9,13 @@ export async function GET(req: NextRequest) {
     const email = searchParams.get('email');
     const domain = searchParams.get('domain');
 
-    if (!email || !domain) {
-      return NextResponse.json({ error: 'Missing email or domain' }, { status: 400 });
+    if (!email) {
+      return NextResponse.json({ error: 'Missing email parameter' }, { status: 400 });
     }
 
     const audit = await prisma.audit.findFirst({
       where: {
-        domain,
+        ...(domain ? { domain } : {}),
         user: { email },
         status: 'completed',
       },
