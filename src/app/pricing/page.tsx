@@ -34,6 +34,7 @@ export default function PricingPage() {
     }
   }, []);
 
+  // Polar checkout links configured via Vercel env variables
   const proMonthly = process.env.NEXT_PUBLIC_POLAR_PRO_MONTHLY_CHECKOUT_URL || '#';
   const proYearly = process.env.NEXT_PUBLIC_POLAR_PRO_YEARLY_CHECKOUT_URL || '#';
   const agencyMonthly = process.env.NEXT_PUBLIC_POLAR_AGENCY_MONTHLY_CHECKOUT_URL || '#';
