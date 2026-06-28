@@ -42,7 +42,7 @@ export default function PricingPage() {
 
   const getUpgradeUrl = (planName: string, period: 'monthly' | 'yearly') => {
     if (!email) {
-      return '/api/auth/google/redirect';
+      return '/'; // Redirect to homepage to connect GSC first
     }
     
     let baseUrl = '#';
