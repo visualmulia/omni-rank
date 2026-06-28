@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 export async function GET(request: Request) {
   try {
@@ -24,9 +25,13 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Payment has not been completed yet.' }, { status: 403 });
     }
 
-    // Check click/download limit (abuse prevention - max 10 clicks)
+    // Check if the buyer is logged in as the owner of the purchase
+    const session = await getSession();
+    const isOwner = session && session.email === purchase.email;
+
+    // Check click/download limit (abuse prevention - max 10 clicks) - bypass if owner is logged in
     const MAX_ACCESS_LIMIT = 10;
-    if (purchase.accessCount >= MAX_ACCESS_LIMIT) {
+    if (!isOwner && purchase.accessCount >= MAX_ACCESS_LIMIT) {
       return NextResponse.json({ 
         error: 'Download link access limit exceeded. Please contact support to reset your link.' 
       }, { status: 403 });
