@@ -24,11 +24,19 @@ export default function PricingPage() {
       const urlEmail = params.get('email');
       if (urlEmail) {
         setEmail(urlEmail);
-        localStorage.setItem('omnirank_user_email', urlEmail);
+        try {
+          localStorage.setItem('omnirank_user_email', urlEmail);
+        } catch (e) {
+          console.warn('localStorage is blocked:', e);
+        }
       } else {
-        const savedEmail = localStorage.getItem('omnirank_user_email');
-        if (savedEmail) {
-          setEmail(savedEmail);
+        try {
+          const savedEmail = localStorage.getItem('omnirank_user_email');
+          if (savedEmail) {
+            setEmail(savedEmail);
+          }
+        } catch (e) {
+          console.warn('localStorage is blocked:', e);
         }
       }
     }

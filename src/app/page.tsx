@@ -51,8 +51,12 @@ export default function Home() {
         setEmail(urlEmail);
         setUrl(urlDomain);
         if (typeof window !== 'undefined') {
-          localStorage.setItem('omnirank_user_email', urlEmail);
-          localStorage.setItem('omnirank_user_domain', urlDomain);
+          try {
+            localStorage.setItem('omnirank_user_email', urlEmail);
+            localStorage.setItem('omnirank_user_domain', urlDomain);
+          } catch (e) {
+            console.warn('localStorage is disabled in this browser mode:', e);
+          }
         }
         
         fetch(`/api/audits?email=${encodeURIComponent(urlEmail)}&domain=${encodeURIComponent(urlDomain)}`)
