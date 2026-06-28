@@ -123,10 +123,19 @@ export async function POST(request: Request) {
       const productId = subscription.product_id;
       const status = subscription.ended_at ? 'inactive' : 'active';
       
+      // Map Polar Product IDs to corresponding application subscription tiers
       let tier = 'free';
-      if (productId === process.env.POLAR_PRO_PRODUCT_ID) {
+      if (
+        productId === process.env.POLAR_PRO_MONTHLY_PRODUCT_ID ||
+        productId === process.env.POLAR_PRO_YEARLY_PRODUCT_ID ||
+        productId === process.env.POLAR_PRO_PRODUCT_ID
+      ) {
         tier = 'pro';
-      } else if (productId === process.env.POLAR_AGENCY_PRODUCT_ID) {
+      } else if (
+        productId === process.env.POLAR_AGENCY_MONTHLY_PRODUCT_ID ||
+        productId === process.env.POLAR_AGENCY_YEARLY_PRODUCT_ID ||
+        productId === process.env.POLAR_AGENCY_PRODUCT_ID
+      ) {
         tier = 'agency';
       }
 
